@@ -1,0 +1,21 @@
+{
+  "name": "multicopy-paste",
+  "version": "1.0.0",
+  "description": "Software to maintain list of recently copied text which can be pasted later using a shortcut",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no   test specified\" && exit 1",
+    "build:mac" : "build --mac dir"
+  },
+  "author": "JerryGoyal",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "1.4.13",
+    "electron-json-storage": "^4.0.0",
+    "electron-packager": "^9.1.0",
+    "electron-reload": "^1.2.2"
+  },
+  "devDependencies": {
+    "node-key-sender": "^1.0.9"
+  }
+}

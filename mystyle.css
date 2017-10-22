@@ -1,0 +1,25 @@
+.container {
+    border-color:black;
+    overflow:auto;
+}
+li {
+    outline: none;
+    cursor: default;
+}
+
+
+
+.active{
+    background-color:yellow;    
+}
+#para{
+    padding: 0;
+    margin: 0;
+}
+#para li{
+width: 90%;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+font-size: 12px;
+}
