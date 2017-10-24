@@ -5,17 +5,15 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no   test specified\" && exit 1",
-    "build:mac" : "build --mac dir"
+    "build:mac": "build --mac dir"
   },
   "author": "JerryGoyal",
   "license": "ISC",
   "dependencies": {
-    "electron": "1.4.13",
-    "electron-json-storage": "^4.0.0",
-    "electron-packager": "^9.1.0",
-    "electron-reload": "^1.2.2"
+    "electron-json-storage": "^4.0.0"
   },
   "devDependencies": {
-    "node-key-sender": "^1.0.9"
+    "electron": "1.7.9",
+    "robotjs": "^0.4.7"
   }
 }

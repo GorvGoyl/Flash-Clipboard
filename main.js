@@ -1,20 +1,20 @@
-const electron = require('electron')
 const { app, BrowserWindow, globalShortcut, clipboard } = require('electron')
+const electron = require('electron')
 const ipc = require('electron').ipcMain
 const storage = require('electron-json-storage')
 const url = require('url')
 const path = require('path')
 const robot = require('robotjs');
-require('electron-reload')(__dirname);
 
 let win
 var last_value = "";
 function createWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
-    win = new BrowserWindow({ width: 200, height: screenSize.height, 
+    win = new BrowserWindow({ width: 250, Height: screenSize.height, 
         backgroundThrottling: false, show: false, thickFrame: true,
+        hasShadow: true,
         frame: true, skipTaskbar: true })
-    //win.setMenu(null)
+        //win.setMenu(null)
     win.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
@@ -48,7 +48,7 @@ function check_clipboard_for_changes() {
         last_value = item;
     }
 }
-ipc.on('asynchronous-message', (event, arg) => {
+ipc.on('paste-command', (event, arg) => {
     win.minimize();
     clipboard.writeText(arg);
     robot.keyTap("v", "control");
@@ -67,7 +67,7 @@ function showPopup() {
         }
         var point = electron.screen.getCursorScreenPoint();
         win.showInactive();
-        win.setPosition(point.x - 10, 0,false);
+        win.setPosition(point.x+10, 0,false);
         win.focus();  
         win.webContents.focus();
         win.webContents.send('sendclipboard', arr);
