@@ -1,0 +1,48 @@
+// How to setup project
+- install latest nodejs from official site
+- check node and npm --version in cmd
+    node: 8.7.0, npm: 5.4.2
+- install electron either globally or local to project (my electron version: 1.7.9)
+    for globally: npm install electron -g
+    for locally (run in vscode terminal after opening project): npm install electron --save-dev --save-exact
+- clone repo from github https://github.com/JerryGoyal/MultiCopy-Paste
+- open with vscode
+
+// How to build
+- run: npm install (it'll give robotjs issues which can be resolved in next step)
+- to fix robotjs issues: follow below instructions or see https://stackoverflow.com/questions/11178372/is-it-possible-to-simulate-keyboard-mouse-event-in-nodejs/46897783#46897783
+    run: npm install --global windows-build-tools
+    run: npm install robotjs --save-dev (for me, it added 0.4.7 version)
+    run: npm rebuild --runtime=electron --target=1.7.9 --disturl=https://atom.io/download/atom-shell --abi=57
+    (1.7.9 is my electron --version and abi 57 is for my corresponding node --version 8.7)
+
+// How to Run
+- run: electron ./main.js
+    (if couldn't run then try build steps one more time and then run)
+
+// Handy NPM commands
+- lists all installed packages:
+npm list
+
+- removes packages not depended on by your project according to your package.json:
+npm prune
+
+- tells you which installed packages are outdated with respect to what is current in the npm registry but allowable by the version definition in your package.json:
+npm outdated (-g)
+
+- Update all packages listed in package.json:
+npm update
+
+- Clean npm cache:
+npm cache clean -f
+
+// to chekc platform
+{
+    accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Ctrl+Shift+I'
+  }
+
+// to package app
+electron-packager ./ multiCopypaste2 --platform=win32 --arch=x64 --overwrite
+
+
+ 
