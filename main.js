@@ -10,7 +10,7 @@ let win
 var last_value = "";
 function createWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
-    win = new BrowserWindow({ width: 250, Height: screenSize.height, 
+    win = new BrowserWindow({ width: 250, minHeight: screenSize.height-40, 
         backgroundThrottling: false, show: false, thickFrame: true,
         hasShadow: true,
         frame: true, skipTaskbar: true })
@@ -52,8 +52,6 @@ ipc.on('paste-command', (event, arg) => {
     win.minimize();
     clipboard.writeText(arg);
     robot.keyTap("v", "control");
-
-    //console.log(arg)  // prints "ping"
     //event.sender.send('asynchronous-reply', 'pong')
 })
 
@@ -66,9 +64,10 @@ function showPopup() {
             arr = data.mclipboard;
         }
         var point = electron.screen.getCursorScreenPoint();
-        win.showInactive();
-        win.setPosition(point.x+10, 0,false);
-        win.focus();  
+        //win.showInactive();
+        win.show();
+        win.setPosition(point.x+10, 20,false);
+        //win.focus();  
         win.webContents.focus();
         win.webContents.send('sendclipboard', arr);
     });
@@ -87,7 +86,6 @@ function copyToMCP(item) {
         if (data && data.mclipboard) {
             arr = data.mclipboard;
         }
-        //console.log(JSON.stringify(arr));
 
         //remove duplicate of this item
         arr = arr.filter(function (a) { return a != item });
@@ -102,7 +100,6 @@ function copyToMCP(item) {
         storage.set('mclipboard', { mclipboard: arr }, function (error) {
             if (error) throw error;
         });
-        //console.log(JSON.stringify(arr));
     });
 }
 
