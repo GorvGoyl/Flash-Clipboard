@@ -12,6 +12,9 @@ let aboutWindow = null;
 var last_copied_val = "";
 // init main
 function initMain() {
+    if (isSecondInstance()) {
+        app.quit();
+    }
     initClipboardWindow();
     initTray();
 
@@ -28,7 +31,7 @@ function initMain() {
         showClipboard();
     })
 
-    
+
 }
 
 function check_clipboard_for_changes() {
@@ -87,11 +90,11 @@ function initClipboardWindow() {
     })
 }
 
-function showAboutWindow(){
+function showAboutWindow() {
     // lazy-loading
-    if(aboutWindow==null){
+    if (aboutWindow == null) {
         aboutWindow = new BrowserWindow({
-            width: 400, height:600,
+            width: 400, height: 600,
             backgroundThrottling: false, show: false, thickFrame: true,
             hasShadow: true,
             frame: true, skipTaskbar: true
@@ -121,7 +124,7 @@ function initTray() {
                 showAboutWindow();
 
             }
-        },{
+        }, {
             label: 'Quit', click: function () {
                 app.quit();
 
@@ -162,18 +165,17 @@ function copyToClipboard(item) {
 
 app.on('ready', initMain)
 
-const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
-    // Someone tried to run a second instance, we should focus our window.
-    if (clipboardWindow) {
-    // no need to restore as our app starts in minimized state
-    //   if (clipboardWindow.isMinimized()) clipboardWindow.restore()
-    //   clipboardWindow.focus()
-    }
-  })
-
-  if (isSecondInstance) {
-    app.quit()
-  }
+function isSecondInstance() {
+    const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (clipboardWindow) {
+            // no need to restore as our app starts in minimized state
+            //   if (clipboardWindow.isMinimized()) clipboardWindow.restore()
+            //   clipboardWindow.focus()
+        }
+    })
+    return isSecondInstance;
+}
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
