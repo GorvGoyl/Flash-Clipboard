@@ -1,12 +1,15 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-      {
-          "name": "Launch",
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+          "name": "Launch Electron",
           "type": "node",
           "request": "launch",
           "program": "${workspaceFolder}/main.js",
-          "protocol": "legacy",
           "stopOnEntry": false,
           "args": [],
           "cwd": "${workspaceRoot}",
@@ -16,17 +19,7 @@
               "--enable-logging"
           ],
           "env": {},
-          "externalConsole": false,
-          "sourceMaps": false,
-          "outDir": null
-      },
-      {
-          "name": "Attach",
-          "type": "node",
-          "request": "attach",
-          "port": 5858,
-          "sourceMaps": false,
-          "outDir": null
+          "sourceMaps": false
       }
-  ]
+    ]
 }
