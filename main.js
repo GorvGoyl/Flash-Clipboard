@@ -89,7 +89,7 @@ function initClipboardWindow() {
 
 function showAboutWindow(){
     // lazy-loading
-    if(true){
+    if(aboutWindow==null){
         aboutWindow = new BrowserWindow({
             width: 400, height:600,
             backgroundThrottling: false, show: false, thickFrame: true,
