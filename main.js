@@ -94,12 +94,13 @@ function showAboutWindow() {
     // lazy-loading
     if (aboutWindow == null) {
         aboutWindow = new BrowserWindow({
-            width: 400, height: 600,
-            backgroundThrottling: false, show: false, thickFrame: true,
-            hasShadow: true,
+            width: 400, height: 300,
+            backgroundThrottling: false, show: false, thickFrame: false,
+            hasShadow: true,resizable:false,maximizable:false,minimizable:false,
+            alwaysOnTop:true,
             frame: true, skipTaskbar: true
         })
-        //aboutWindow.setMenu(null)
+        aboutWindow.setMenu(null)
         aboutWindow.loadURL(url.format({
             pathname: path.join(__dirname, 'about.html'),
             protocol: 'file:',
