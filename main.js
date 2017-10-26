@@ -1,61 +1,51 @@
-const { app, BrowserWindow, globalShortcut, clipboard } = require('electron')
+const { app, Menu, BrowserWindow, globalShortcut, clipboard, Tray } = require('electron')
 const electron = require('electron')
 const ipc = require('electron').ipcMain
 const storage = require('electron-json-storage')
 const url = require('url')
 const path = require('path')
-const robot = require('robotjs');
+const robot = require('robotjs')
 
-let win
-var last_value = "";
-function createWindow() {
-    let screenSize = electron.screen.getPrimaryDisplay().size;
-    win = new BrowserWindow({ width: 250, minHeight: screenSize.height-40, 
-        backgroundThrottling: false, show: false, thickFrame: true,
-        hasShadow: true,
-        frame: true, skipTaskbar: true })
-        //win.setMenu(null)
-    win.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file:',
-        slashes: true
-    }))
-    win.on('blur', function (event) {
+let clipboardWindow = null;
+let tray = null;
+let aboutWindow = null;
+var last_copied_val = "";
+// init main
+function initMain() {
+    initClipboardWindow();
+    initTray();
+
+    // hide on blur
+    clipboardWindow.on('blur', function (event) {
         event.preventDefault()
-        win.minimize();
+        clipboardWindow.minimize();
     });
 
     // Check for changes at an interval.
     setInterval(check_clipboard_for_changes, 500);
 
     globalShortcut.register('CommandOrControl+O', () => {
-        showPopup();
+        showClipboard();
     })
 
-    // Emitted when the window is closed.
-    win.on('closed', () => {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
-        win = null
-    })
+    
 }
 
 function check_clipboard_for_changes() {
     let item = electron.clipboard.readText(String);
-    if (last_value !== item && item.trim().replace(/\s/g, "") != "") {
-        copyToMCP(item);
-        last_value = item;
+    if (last_copied_val !== item && item.trim().replace(/\s/g, "") != "") {
+        copyToClipboard(item);
+        last_copied_val = item;
     }
 }
 ipc.on('paste-command', (event, arg) => {
-    win.minimize();
+    clipboardWindow.minimize();
     clipboard.writeText(arg);
     robot.keyTap("v", "control");
     //event.sender.send('asynchronous-reply', 'pong')
 })
 
-function showPopup() {
+function showClipboard() {
     var arr = [];
     storage.get('mclipboard', function (error, data) {
         //console.log(data)
@@ -64,18 +54,85 @@ function showPopup() {
             arr = data.mclipboard;
         }
         var point = electron.screen.getCursorScreenPoint();
-        //win.showInactive();
-        win.show();
-        win.setPosition(point.x+10, 20,false);
-        //win.focus();  
-        win.webContents.focus();
-        win.webContents.send('sendclipboard', arr);
+        //clipboardWindow.showInactive();
+        clipboardWindow.show();
+        clipboardWindow.setPosition(point.x + 10, 20, false);
+        //clipboardWindow.focus();  
+        clipboardWindow.webContents.focus();
+        clipboardWindow.webContents.send('sendclipboard', arr);
     });
-
-      
 }
 
-function copyToMCP(item) {
+function initClipboardWindow() {
+    let screenSize = electron.screen.getPrimaryDisplay().size;
+    clipboardWindow = new BrowserWindow({
+        maxWidth: 250, minWidth: 250, minHeight: screenSize.height - 40,
+        backgroundThrottling: false, show: false, thickFrame: true,
+        hasShadow: true,
+        frame: true, skipTaskbar: true
+    })
+    //clipboardWindow.setMenu(null)
+    clipboardWindow.loadURL(url.format({
+        pathname: path.join(__dirname, 'index.html'),
+        protocol: 'file:',
+        slashes: true
+    }))
+
+    // Emitted when the window is closed.
+    clipboardWindow.on('closed', () => {
+        // Dereference the window object, usually you would store windows
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
+        clipboardWindow = null
+    })
+}
+
+function showAboutWindow(){
+    // lazy-loading
+    if(true){
+        aboutWindow = new BrowserWindow({
+            width: 400, height:600,
+            backgroundThrottling: false, show: false, thickFrame: true,
+            hasShadow: true,
+            frame: true, skipTaskbar: true
+        })
+        //aboutWindow.setMenu(null)
+        aboutWindow.loadURL(url.format({
+            pathname: path.join(__dirname, 'about.html'),
+            protocol: 'file:',
+            slashes: true
+        }))
+    }
+    aboutWindow.show();
+    // Emitted when the window is closed.
+    aboutWindow.on('closed', () => {
+        // Dereference the window object, usually you would store windows
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
+        aboutWindow = null
+    })
+}
+
+function initTray() {
+    tray = new Tray("./images/clipboard2.png")
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: 'About', click: function () {
+                showAboutWindow();
+
+            }
+        },{
+            label: 'Quit', click: function () {
+                app.quit();
+
+            }
+        }
+    ])
+    tray.setToolTip('This is my application.')
+    tray.setContextMenu(contextMenu)
+}
+
+function copyToClipboard(item) {
     var arr = [];
     //const dataPath = storage.getDataPath();
     //console.log(dataPath);
@@ -103,7 +160,7 @@ function copyToMCP(item) {
     });
 }
 
-app.on('ready', createWindow)
+app.on('ready', initMain)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -117,7 +174,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (win === null) {
-        createWindow()
+    if (clipboardWindow === null) {
+        initMain()
     }
 })
