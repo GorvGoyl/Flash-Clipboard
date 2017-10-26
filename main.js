@@ -128,7 +128,7 @@ function initTray() {
             }
         }
     ])
-    tray.setToolTip('This is my application.')
+    tray.setToolTip('')
     tray.setContextMenu(contextMenu)
 }
 
@@ -161,6 +161,19 @@ function copyToClipboard(item) {
 }
 
 app.on('ready', initMain)
+
+const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (clipboardWindow) {
+    // no need to restore as our app starts in minimized state
+    //   if (clipboardWindow.isMinimized()) clipboardWindow.restore()
+    //   clipboardWindow.focus()
+    }
+  })
+
+  if (isSecondInstance) {
+    app.quit()
+  }
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
