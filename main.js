@@ -13,8 +13,10 @@ let aboutWindow = null;
 let last_copied_val = "";
 let defaultHeight;
 let contextMenu;
+let TIMEDELAY = 500;
+let intervalId;
 let isDisabled_btnClearClipboard = false;
-let clipboardKey = "mclipboard";
+let CLIPBOARDKEY = "mclipboard";
 let defaultWidth = 250;
 // init main
 function initMain() {
@@ -31,7 +33,7 @@ function initMain() {
     });
 
     // Check for changes at an interval.
-    setInterval(check_clipboard_for_changes, 500);
+   intervalId = setInterval(check_clipboard_for_changes,TIMEDELAY);
 
     globalShortcut.register('CommandOrControl+O', () => {
         showClipboard();
@@ -56,7 +58,7 @@ ipc.on('paste-command', (event, arg) => {
 
 function showClipboard() {
     let arr = [];
-    storage.get(clipboardKey, function (error, data) {
+    storage.get(CLIPBOARDKEY, function (error, data) {
         //console.log(data)
         if (error) throw error;
         if (data && data.mclipboard) {
@@ -130,12 +132,17 @@ function initTray() {
     tray = new Tray("./images/clipboard2.png")
     const template = [
         {
-            label: 'About', click: function () {
-                showAboutWindow();
+            label: 'Pause capturing text', click: function () {
+                pauseplayClipboard();
             }
         }, {
             label: 'Clear Clipboard', click: function () {
                 clearClipboard();
+            }
+        },
+        {
+            label: 'About', click: function () {
+                showAboutWindow();
             }
         }, {
             label: 'Quit', click: function () {
@@ -150,7 +157,7 @@ function initTray() {
 }
 
 function clearClipboard() {
-    storage.remove(clipboardKey, function (error) {
+    storage.remove(CLIPBOARDKEY, function (error) {
         if (error) throw error;
         btnClearClipboard("disable");
     });
@@ -165,13 +172,28 @@ function btnClearClipboard(action) {
         isDisabled_btnClearClipboard = true;
     }
 }
+
+function pauseplayClipboard(){
+    if(intervalId){
+        clearInterval(intervalId);
+        intervalId=null;
+        contextMenu.items[0].label = "Resume capturing text";
+    }else{
+        // prevent currently copied text
+        last_copied_val = electron.clipboard.readText(String);
+        intervalId = setInterval(check_clipboard_for_changes,TIMEDELAY);
+        contextMenu.items[0].label = "Pause capturing text";
+    }
+    tray.setContextMenu(contextMenu);
+}
+
 function copyToClipboard(item) {
     let arr = [];
     //const dataPath = storage.getDataPath();
     //console.log(dataPath);
 
     // get arr from system
-    storage.get(clipboardKey, function (error, data) {
+    storage.get(CLIPBOARDKEY, function (error, data) {
         if (error) throw error;
         if (data && data.mclipboard) {
             arr = data.mclipboard;
@@ -187,7 +209,7 @@ function copyToClipboard(item) {
         }
 
         // store the arr back to system
-        storage.set(clipboardKey, { mclipboard: arr }, function (error) {
+        storage.set(CLIPBOARDKEY, { mclipboard: arr }, function (error) {
             if (error) throw error;
             if (isDisabled_btnClearClipboard) {
                 btnClearClipboard("enable");
