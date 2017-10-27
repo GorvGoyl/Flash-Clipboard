@@ -1,3 +1,4 @@
+'use strict';
 const { app, Menu, BrowserWindow, globalShortcut, clipboard, Tray } = require('electron')
 const electron = require('electron')
 const ipc = require('electron').ipcMain
@@ -9,7 +10,12 @@ const robot = require('robotjs')
 let clipboardWindow = null;
 let tray = null;
 let aboutWindow = null;
-var last_copied_val = "";
+let last_copied_val = "";
+let defaultHeight;
+let contextMenu;
+let isDisabled_btnClearClipboard = false;
+let clipboardKey = "mclipboard";
+let defaultWidth = 250;
 // init main
 function initMain() {
     if (isSecondInstance()) {
@@ -49,18 +55,20 @@ ipc.on('paste-command', (event, arg) => {
 })
 
 function showClipboard() {
-    var arr = [];
-    storage.get('mclipboard', function (error, data) {
+    let arr = [];
+    storage.get(clipboardKey, function (error, data) {
         //console.log(data)
         if (error) throw error;
         if (data && data.mclipboard) {
             arr = data.mclipboard;
         }
-        var point = electron.screen.getCursorScreenPoint();
-        //clipboardWindow.showInactive();
-        clipboardWindow.show();
+        let point = electron.screen.getCursorScreenPoint();
+        clipboardWindow.showInactive();
+        //clipboardWindow.show();
+        //clipboardWindow.setBounds({width:defaultWidth,height:defaultHeight, x: point.x+10, y:20},false)
         clipboardWindow.setPosition(point.x + 10, 20, false);
-        //clipboardWindow.focus();  
+        //clipboardWindow.show();
+        clipboardWindow.focus();
         clipboardWindow.webContents.focus();
         clipboardWindow.webContents.send('sendclipboard', arr);
     });
@@ -68,13 +76,14 @@ function showClipboard() {
 
 function initClipboardWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
+    defaultHeight = screenSize.height - 40;
     clipboardWindow = new BrowserWindow({
-        maxWidth: 250, minWidth: 250, minHeight: screenSize.height - 40,
-        backgroundThrottling: false, show: false, thickFrame: true,
-        hasShadow: true,
-        frame: true, skipTaskbar: true
+        maxWidth: defaultWidth, minWidth: defaultWidth, minHeight: defaultHeight,
+        backgroundThrottling: false, show: false, hasShadow: true, skipTaskbar: true,
+        thickFrame: false, frame: false
+
     })
-    //clipboardWindow.setMenu(null)
+    clipboardWindow.setMenu(null)
     clipboardWindow.loadURL(url.format({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
@@ -96,8 +105,8 @@ function showAboutWindow() {
         aboutWindow = new BrowserWindow({
             width: 400, height: 300,
             backgroundThrottling: false, show: false, thickFrame: false,
-            hasShadow: true,resizable:false,maximizable:false,minimizable:false,
-            alwaysOnTop:true,
+            hasShadow: true, resizable: false, maximizable: false, minimizable: false,
+            alwaysOnTop: true,
             frame: true, skipTaskbar: true
         })
         aboutWindow.setMenu(null)
@@ -119,30 +128,50 @@ function showAboutWindow() {
 
 function initTray() {
     tray = new Tray("./images/clipboard2.png")
-    const contextMenu = Menu.buildFromTemplate([
+    const template = [
         {
             label: 'About', click: function () {
                 showAboutWindow();
-
+            }
+        }, {
+            label: 'Clear Clipboard', click: function () {
+                clearClipboard();
             }
         }, {
             label: 'Quit', click: function () {
                 app.quit();
-
             }
         }
-    ])
+    ]
+    contextMenu = Menu.buildFromTemplate(template)
+
     tray.setToolTip('')
     tray.setContextMenu(contextMenu)
 }
 
+function clearClipboard() {
+    storage.remove(clipboardKey, function (error) {
+        if (error) throw error;
+        btnClearClipboard("disable");
+    });
+}
+
+function btnClearClipboard(action) {
+    if (action == "enable") {
+        contextMenu.items[1].enabled = true;
+        isDisabled_btnClearClipboard = false;
+    } else if (action == "disable") {
+        contextMenu.items[1].enabled = false;
+        isDisabled_btnClearClipboard = true;
+    }
+}
 function copyToClipboard(item) {
-    var arr = [];
+    let arr = [];
     //const dataPath = storage.getDataPath();
     //console.log(dataPath);
 
     // get arr from system
-    storage.get('mclipboard', function (error, data) {
+    storage.get(clipboardKey, function (error, data) {
         if (error) throw error;
         if (data && data.mclipboard) {
             arr = data.mclipboard;
@@ -158,8 +187,11 @@ function copyToClipboard(item) {
         }
 
         // store the arr back to system
-        storage.set('mclipboard', { mclipboard: arr }, function (error) {
+        storage.set(clipboardKey, { mclipboard: arr }, function (error) {
             if (error) throw error;
+            if (isDisabled_btnClearClipboard) {
+                btnClearClipboard("enable");
+            }
         });
     });
 }
