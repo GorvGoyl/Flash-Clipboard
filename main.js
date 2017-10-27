@@ -36,7 +36,7 @@ function initMain() {
    intervalId = setInterval(check_clipboard_for_changes,TIMEDELAY);
 
     globalShortcut.register('CommandOrControl+O', () => {
-        showClipboard();
+        showClipboardWindow();
     })
 
 
@@ -56,7 +56,7 @@ ipc.on('paste-command', (event, arg) => {
     //event.sender.send('asynchronous-reply', 'pong')
 })
 
-function showClipboard() {
+function showClipboardWindow() {
     let arr = [];
     storage.get(CLIPBOARDKEY, function (error, data) {
         //console.log(data)
@@ -64,15 +64,16 @@ function showClipboard() {
         if (data && data.mclipboard) {
             arr = data.mclipboard;
         }
+        clipboardWindow.webContents.focus();
+        clipboardWindow.webContents.send('sendclipboard', arr);
         let point = electron.screen.getCursorScreenPoint();
         clipboardWindow.showInactive();
         //clipboardWindow.show();
         //clipboardWindow.setBounds({width:defaultWidth,height:defaultHeight, x: point.x+10, y:20},false)
-        clipboardWindow.setPosition(point.x + 10, 20, false);
+        clipboardWindow.setPosition(point.x + 20, 20, false);
         //clipboardWindow.show();
         clipboardWindow.focus();
-        clipboardWindow.webContents.focus();
-        clipboardWindow.webContents.send('sendclipboard', arr);
+        
     });
 }
 
