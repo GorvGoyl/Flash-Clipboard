@@ -152,7 +152,7 @@ function initTray() {
     ]
     contextMenu = Menu.buildFromTemplate(template)
 
-    tray.setToolTip('')
+    tray.setToolTip('MultiCopy Paste')
     tray.setContextMenu(contextMenu)
 }
 
