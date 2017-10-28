@@ -42,7 +42,20 @@ npm cache clean -f
   }
 
 // to package app
-electron-packager ./ multiCopypaste2 --platform=win32 --arch=x64 --overwrite
-
-
+old way: electron-packager ./ multiCopypaste2 --platform=win32 --arch=x64 --overwrite
+// using electron builder
+- install yarn from https://yarnpkg.com/en/docs/install
+- run in vscode: yarn add electron-builder --dev
+- configure package.json follow https://www.electron.build
+- run: npx electron-builder
+//artifactName String - The artifact file name template. Defaults to ${productName} Setup ${version}.${ext}
+//can use glob ["**/*", "build/icon.*"]
  
+
+"nsis": {
+    "runAfterFinish": true,
+    "installerIcon": "icon.ico",
+    "uninstallerIcon": "icon.ico",
+    "createDesktopShortcut": true,
+    "deleteAppDataOnUninstall": true
+  }

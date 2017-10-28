@@ -2,18 +2,39 @@
   "name": "multicopy-paste",
   "version": "1.0.0",
   "description": "Software to maintain list of recently copied text which can be pasted later using a shortcut",
+  "homepage": "https://github.com/JerryGoyal/MultiCopy-Paste",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no   test specified\" && exit 1",
-    "build:mac": "build --mac dir"
+    "build:mac": "build --mac dir",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "files": ["./icon.ico"],
+  "build": {
+    "productName": "Multicopy Paste",
+    "copyright": "Copyright © 2017 Gourav Goyal",
+    
+    "appId": "com.jerryapps.multicopypaste",
+    "win": {
+      "icon": "icon.ico",
+      "publisherName": "Gourav Goyal"
+    },
+    "nsis": {
+      "runAfterFinish": true,
+      "createDesktopShortcut": true,
+      "deleteAppDataOnUninstall": true
+    }
   },
   "author": "JerryGoyal",
   "license": "ISC",
   "dependencies": {
-    "electron-json-storage": "^4.0.0"
+    "electron-json-storage": "^4.0.0",
+    "robotjs": "^0.4.7"
   },
   "devDependencies": {
-    "electron": "1.7.9",
-    "robotjs": "^0.4.7"
+    "electron-builder": "^19.42.2",
+    "electron": "1.7.9"
   }
 }

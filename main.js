@@ -6,6 +6,7 @@ const storage = require('electron-json-storage')
 const url = require('url')
 const path = require('path')
 const robot = require('robotjs')
+//const config = require('../src/config')
 
 let clipboardWindow = null;
 let tray = null;
@@ -130,7 +131,7 @@ function showAboutWindow() {
 }
 
 function initTray() {
-    tray = new Tray("./images/clipboard2.png")
+    tray = new Tray(__dirname+"/icon.ico")
     const template = [
         {
             label: 'Pause capturing text', click: function () {
