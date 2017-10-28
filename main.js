@@ -28,22 +28,7 @@ function initMain() {
     // hide on blur
     clipboardWindow.on('blur', function (event) {
         //clipboardWindow.webContents.send('clearHtmlList');
-        //event.preventDefault();
-        // clipboardWindow.show();
-        // clipboardWindow.focus();
-        // clipboardWindow.webContents.focus();
-        // clipboardWindow.webContents.send('sendclipboard', '[]');
         hideClipboardWindow();
-        //clipboardWindow.webContents.reload();
-        //console.log('sd');
-        //hideClipboardWindow();
-        // clipboardWindow.webContents.executeJavaScript("", true,()=>{
-        //     hideClipboardWindow();
-        // })
-        
-        
-        //clipboardWindow.webContents.reload();
-        
     });
 
 
@@ -87,23 +72,7 @@ function showClipboardWindow() {
         clipboardWindow.show();
         clipboardWindow.webContents.focus();
         clipboardWindow.webContents.send('sendclipboard', arr);
-
-        //let point = electron.screen.getCursorScreenPoint();
-        //clipboardWindow.showInactive();
-        //clipboardWindow.show();
-        //clipboardWindow.setBounds({width:config.WIDTH,height:defaultHeight, x: point.x+10, y:20},false)
-        //clipboardWindow.setPosition(point.x + 20, 20, false);
-        //clipboardWindow.show();
-        //clipboardWindow.focus();
-        
     });
-    
-   //wait for 100ms then show the window.. workaround for dom-ready event
-    // setTimeout(function(){
-    //     let point = electron.screen.getCursorScreenPoint();
-    //     clipboardWindow.setPosition(point.x + 20, 20, false);
-    // }, 100);
-   
 }
 
 
