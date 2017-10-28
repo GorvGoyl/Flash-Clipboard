@@ -36,10 +36,7 @@ npm update
 - Clean npm cache:
 npm cache clean -f
 
-// to chekc platform
-{
-    accelerator: process.platform === 'darwin' ? 'Alt+Cmd+I' : 'Ctrl+Shift+I'
-  }
+
 
 // to package app
 old way: electron-packager ./ multiCopypaste2 --platform=win32 --arch=x64 --overwrite

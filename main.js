@@ -6,7 +6,7 @@ const storage = require('electron-json-storage')
 const url = require('url')
 const path = require('path')
 const robot = require('robotjs')
-//const config = require('../src/config')
+const config = require('./config')
 
 let clipboardWindow = null;
 let tray = null;
@@ -14,11 +14,9 @@ let aboutWindow = null;
 let last_copied_val = "";
 let defaultHeight;
 let contextMenu;
-let TIMEDELAY = 500;
 let intervalId;
 let isDisabled_btnClearClipboard = false;
-let CLIPBOARDKEY = "mclipboard";
-let defaultWidth = 250;
+
 // init main
 function initMain() {
     if (isSecondInstance()) {
@@ -34,7 +32,7 @@ function initMain() {
     });
 
     // Check for changes at an interval.
-   intervalId = setInterval(check_clipboard_for_changes,TIMEDELAY);
+   intervalId = setInterval(check_clipboard_for_changes,config.TIMEDELAY);
 
     globalShortcut.register('CommandOrControl+O', () => {
         showClipboardWindow();
@@ -59,7 +57,7 @@ ipc.on('paste-command', (event, arg) => {
 
 function showClipboardWindow() {
     let arr = [];
-    storage.get(CLIPBOARDKEY, function (error, data) {
+    storage.get(config.CLIPBOARDKEY, function (error, data) {
         //console.log(data)
         if (error) throw error;
         if (data && data.mclipboard) {
@@ -70,7 +68,7 @@ function showClipboardWindow() {
         let point = electron.screen.getCursorScreenPoint();
         clipboardWindow.showInactive();
         //clipboardWindow.show();
-        //clipboardWindow.setBounds({width:defaultWidth,height:defaultHeight, x: point.x+10, y:20},false)
+        //clipboardWindow.setBounds({width:config.WIDTH,height:defaultHeight, x: point.x+10, y:20},false)
         clipboardWindow.setPosition(point.x + 20, 20, false);
         //clipboardWindow.show();
         clipboardWindow.focus();
@@ -82,7 +80,7 @@ function initClipboardWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
     defaultHeight = screenSize.height - 40;
     clipboardWindow = new BrowserWindow({
-        maxWidth: defaultWidth, minWidth: defaultWidth, minHeight: defaultHeight,
+        maxWidth: config.WIDTH, minWidth: config.WIDTH, minHeight: defaultHeight,
         backgroundThrottling: false, show: false, hasShadow: true, skipTaskbar: true,
         thickFrame: false, frame: false
 
@@ -131,7 +129,7 @@ function showAboutWindow() {
 }
 
 function initTray() {
-    tray = new Tray(__dirname+"/icon.ico")
+    tray = new Tray(getTrayIconPath())
     const template = [
         {
             label: 'Pause capturing text', click: function () {
@@ -159,7 +157,7 @@ function initTray() {
 }
 
 function clearClipboard() {
-    storage.remove(CLIPBOARDKEY, function (error) {
+    storage.remove(config.CLIPBOARDKEY, function (error) {
         if (error) throw error;
         btnClearClipboard("disable");
     });
@@ -183,19 +181,24 @@ function pauseplayClipboard(){
     }else{
         // prevent currently copied text
         last_copied_val = electron.clipboard.readText(String);
-        intervalId = setInterval(check_clipboard_for_changes,TIMEDELAY);
+        intervalId = setInterval(check_clipboard_for_changes,config.TIMEDELAY);
         contextMenu.items[0].label = "Pause capturing text";
     }
     tray.setContextMenu(contextMenu);
 }
 
+function getTrayIconPath(){
+    if(config.OS === 'win32')
+     return config.TRAY_ICON + '.ico'
+     return config.TRAY_ICON + '.png'
+}
 function copyToClipboard(item) {
     let arr = [];
     //const dataPath = storage.getDataPath();
     //console.log(dataPath);
 
     // get arr from system
-    storage.get(CLIPBOARDKEY, function (error, data) {
+    storage.get(config.CLIPBOARDKEY, function (error, data) {
         if (error) throw error;
         if (data && data.mclipboard) {
             arr = data.mclipboard;
@@ -211,7 +214,7 @@ function copyToClipboard(item) {
         }
 
         // store the arr back to system
-        storage.set(CLIPBOARDKEY, { mclipboard: arr }, function (error) {
+        storage.set(config.CLIPBOARDKEY, { mclipboard: arr }, function (error) {
             if (error) throw error;
             if (isDisabled_btnClearClipboard) {
                 btnClearClipboard("enable");
