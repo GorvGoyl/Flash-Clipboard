@@ -1,11 +1,10 @@
 const { ipcRenderer } = require('electron')
-var ipc = require('electron').ipcRenderer;
+let ipc = require('electron').ipcRenderer;
 
 ipc.on('sendclipboard', function (event, clipArr) {
-
-    var ul = document.getElementById("clipboard-ul");
-    ul.innerHTML = "";
-    var li = "";
+    clearHtmlList();
+    let ul = document.getElementById("clipboard-ul");
+    let li = "";
     // build li
     for (i = 0; i < clipArr.length; i++) {
         li = document.createElement("li");
@@ -13,15 +12,31 @@ ipc.on('sendclipboard', function (event, clipArr) {
         li.appendChild(document.createTextNode(clipArr[i]));
         ul.appendChild(li);
     }
+
  // default focus on 2nd element
+ if(clipArr.length>1)
     $('li:first-child').next().focus().addClass("active");
+    else  $('li:first-child').focus().addClass("active");
+
+    ipcRenderer.send('dom-ready-command');
 });
 
+ipc.on('clearHtmlList', function (event) {
+    clearHtmlList();});
+// $(window).bind("beforeunload", function() { 
+//     clearHtmlList(); 
+// })
 function pasteValue(item) {
-    //var ul = document.getElementById("clipboard-ul");
-    //ul.innerHTML = "";
+    clearHtmlList();
+    // if(ipcRenderer.sendSync('paste-command', item())){
+    //     clearHtmlList();
+    // }
     ipcRenderer.send('paste-command', item);
     
+}
+
+function clearHtmlList(){
+    $('#clipboard-ul').empty();
 }
 
 $(document).ready(function () {

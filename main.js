@@ -27,32 +27,26 @@ function initMain() {
 
     // hide on blur
     clipboardWindow.on('blur', function (event) {
-        event.preventDefault()
+        //clipboardWindow.webContents.send('clearHtmlList');
+        //event.preventDefault();
+        // clipboardWindow.show();
+        // clipboardWindow.focus();
+        // clipboardWindow.webContents.focus();
+        // clipboardWindow.webContents.send('sendclipboard', '[]');
         hideClipboardWindow();
+        //clipboardWindow.webContents.reload();
+        //console.log('sd');
+        //hideClipboardWindow();
+        // clipboardWindow.webContents.executeJavaScript("", true,()=>{
+        //     hideClipboardWindow();
+        // })
+        
+        
+        //clipboardWindow.webContents.reload();
+        
     });
 
-// clipboardWindow.on('show', function (event) {
-//     event.preventDefault()
-//     let arr = [];
-//     storage.get(config.CLIPBOARDKEY, function (error, data) {
-//         //console.log(data)
-//         if (error) throw error;
-//         if (data && data.mclipboard) {
-//             arr = data.mclipboard;
-//         }
-//         //clipboardWindow.webContents.reloadIgnoringCache();
-//         clipboardWindow.webContents.focus();
-//         clipboardWindow.webContents.send('sendclipboard', arr);
-//         let point = electron.screen.getCursorScreenPoint();
-//         //clipboardWindow.showInactive();
-//         //clipboardWindow.show();
-//         //clipboardWindow.setBounds({width:config.WIDTH,height:defaultHeight, x: point.x+10, y:20},false)
-//         clipboardWindow.setPosition(point.x + 20, 20, false);
-//         //clipboardWindow.show();
-//         //clipboardWindow.focus();
-        
-//     });
-// });
+
     // Check for changes at an interval.
    intervalId = setInterval(check_clipboard_for_changes,config.TIMEDELAY);
 
@@ -75,6 +69,13 @@ ipc.on('paste-command', (event, arg) => {
     clipboard.writeText(arg);
     robot.keyTap("v", "control");
 })
+ipc.on('dom-ready-command', (event, arg) => {
+     //wait for 100ms then show the window.. workaround for dom-ready event
+    setTimeout(function(){
+        let point = electron.screen.getCursorScreenPoint();
+        clipboardWindow.setPosition(point.x + 20, 20, false);
+    }, 100);
+})
 
 function showClipboardWindow() {
     let arr = [];
@@ -83,24 +84,28 @@ function showClipboardWindow() {
         if (data && data.mclipboard) {
             arr = data.mclipboard;
         }
-        //clipboardWindow.webContents.reloadIgnoringCache();
+        clipboardWindow.show();
         clipboardWindow.webContents.focus();
         clipboardWindow.webContents.send('sendclipboard', arr);
-        // clipboardWindow.webContents.on('dom-ready', function() {
-        //     let point = electron.screen.getCursorScreenPoint();
-        //     clipboardWindow.setPosition(point.x + 20, 20, false);
-        //     clipboardWindow.show()
-        //   });
-        let point = electron.screen.getCursorScreenPoint();
-        clipboardWindow.showInactive();
+
+        //let point = electron.screen.getCursorScreenPoint();
+        //clipboardWindow.showInactive();
         //clipboardWindow.show();
         //clipboardWindow.setBounds({width:config.WIDTH,height:defaultHeight, x: point.x+10, y:20},false)
-        clipboardWindow.setPosition(point.x + 20, 20, false);
+        //clipboardWindow.setPosition(point.x + 20, 20, false);
         //clipboardWindow.show();
-        clipboardWindow.focus();
+        //clipboardWindow.focus();
         
     });
+    
+   //wait for 100ms then show the window.. workaround for dom-ready event
+    // setTimeout(function(){
+    //     let point = electron.screen.getCursorScreenPoint();
+    //     clipboardWindow.setPosition(point.x + 20, 20, false);
+    // }, 100);
+   
 }
+
 
 function hideClipboardWindow(){
     let p = electron.screen.getPrimaryDisplay().size
@@ -112,7 +117,10 @@ function initClipboardWindow() {
     defaultHeight = screenSize.height - 40;
     clipboardWindow = new BrowserWindow({
         minWidth: config.WIDTH, minHeight: defaultHeight,
-        backgroundThrottling: false, show: false, hasShadow: true, skipTaskbar: true,
+        webPreferences:{
+            backgroundThrottling:false
+        },
+        show: false, hasShadow: true, skipTaskbar: true,backgroundColor:"#f5f5f5",
         resizable:false,maxWidth: config.WIDTH, thickFrame: false, frame: false
 
     })
@@ -122,18 +130,15 @@ function initClipboardWindow() {
         protocol: 'file:',
         slashes: true
     }))
-
+    hideClipboardWindow();
+        
     // Emitted when the window is closed.
     clipboardWindow.on('closed', () => {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
         clipboardWindow = null
     })
 }
 
 function showAboutWindow() {
-    // lazy-loading
     if (aboutWindow == null) {
         aboutWindow = new BrowserWindow({
             width: 400, height: 300,
@@ -150,11 +155,7 @@ function showAboutWindow() {
         }))
     }
     aboutWindow.show();
-    // Emitted when the window is closed.
     aboutWindow.on('closed', () => {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
         aboutWindow = null
     })
 }
@@ -225,8 +226,6 @@ function getTrayIconPath(){
 }
 function copyToClipboard(item) {
     let arr = [];
-    //const dataPath = storage.getDataPath();
-    //console.log(dataPath);
 
     // get arr from system
     storage.get(config.CLIPBOARDKEY, function (error, data) {
