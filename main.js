@@ -155,6 +155,9 @@ function initTray() {
 
     tray.setToolTip('MultiCopy Paste')
     tray.setContextMenu(contextMenu)
+    tray.on("double-click",function(){
+        tray.popUpContextMenu();
+    });
 }
 
 function clearClipboard() {
