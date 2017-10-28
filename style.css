@@ -6,7 +6,11 @@
     overflow:auto;
 }
 
-
+html{
+    border-style: solid;
+    border-color: slategray;
+    border-width: medium;
+}
 body{
     background-color:whitesmoke;
 }

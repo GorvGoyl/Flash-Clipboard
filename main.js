@@ -28,9 +28,31 @@ function initMain() {
     // hide on blur
     clipboardWindow.on('blur', function (event) {
         event.preventDefault()
-        clipboardWindow.minimize();
+        hideClipboardWindow();
     });
 
+// clipboardWindow.on('show', function (event) {
+//     event.preventDefault()
+//     let arr = [];
+//     storage.get(config.CLIPBOARDKEY, function (error, data) {
+//         //console.log(data)
+//         if (error) throw error;
+//         if (data && data.mclipboard) {
+//             arr = data.mclipboard;
+//         }
+//         //clipboardWindow.webContents.reloadIgnoringCache();
+//         clipboardWindow.webContents.focus();
+//         clipboardWindow.webContents.send('sendclipboard', arr);
+//         let point = electron.screen.getCursorScreenPoint();
+//         //clipboardWindow.showInactive();
+//         //clipboardWindow.show();
+//         //clipboardWindow.setBounds({width:config.WIDTH,height:defaultHeight, x: point.x+10, y:20},false)
+//         clipboardWindow.setPosition(point.x + 20, 20, false);
+//         //clipboardWindow.show();
+//         //clipboardWindow.focus();
+        
+//     });
+// });
     // Check for changes at an interval.
    intervalId = setInterval(check_clipboard_for_changes,config.TIMEDELAY);
 
@@ -49,22 +71,26 @@ function check_clipboard_for_changes() {
     }
 }
 ipc.on('paste-command', (event, arg) => {
-    clipboardWindow.minimize();
+    hideClipboardWindow();
     clipboard.writeText(arg);
     robot.keyTap("v", "control");
-    //event.sender.send('asynchronous-reply', 'pong')
 })
 
 function showClipboardWindow() {
     let arr = [];
     storage.get(config.CLIPBOARDKEY, function (error, data) {
-        //console.log(data)
         if (error) throw error;
         if (data && data.mclipboard) {
             arr = data.mclipboard;
         }
+        //clipboardWindow.webContents.reloadIgnoringCache();
         clipboardWindow.webContents.focus();
         clipboardWindow.webContents.send('sendclipboard', arr);
+        // clipboardWindow.webContents.on('dom-ready', function() {
+        //     let point = electron.screen.getCursorScreenPoint();
+        //     clipboardWindow.setPosition(point.x + 20, 20, false);
+        //     clipboardWindow.show()
+        //   });
         let point = electron.screen.getCursorScreenPoint();
         clipboardWindow.showInactive();
         //clipboardWindow.show();
@@ -76,18 +102,23 @@ function showClipboardWindow() {
     });
 }
 
+function hideClipboardWindow(){
+    let p = electron.screen.getPrimaryDisplay().size
+    clipboardWindow.setPosition(p.height, p.width, false);
+    clipboardWindow.minimize();
+}
 function initClipboardWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
     defaultHeight = screenSize.height - 40;
     clipboardWindow = new BrowserWindow({
-        maxWidth: config.WIDTH, minWidth: config.WIDTH, minHeight: defaultHeight,
+        minWidth: config.WIDTH, minHeight: defaultHeight,
         backgroundThrottling: false, show: false, hasShadow: true, skipTaskbar: true,
-        thickFrame: false, frame: false
+        resizable:false,maxWidth: config.WIDTH, thickFrame: false, frame: false
 
     })
     clipboardWindow.setMenu(null)
     clipboardWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
+        pathname: config.CLIPBOARD_WIN_PATH,
         protocol: 'file:',
         slashes: true
     }))
@@ -113,7 +144,7 @@ function showAboutWindow() {
         })
         aboutWindow.setMenu(null)
         aboutWindow.loadURL(url.format({
-            pathname: path.join(__dirname, 'about.html'),
+            pathname: config.ABOUT_WIN_PATH,
             protocol: 'file:',
             slashes: true
         }))
@@ -241,7 +272,7 @@ function isSecondInstance() {
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
+    if (config.OS !== 'darwin') {
         app.quit()
     }
 })

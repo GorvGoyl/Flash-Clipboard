@@ -2,6 +2,7 @@ const { ipcRenderer } = require('electron')
 var ipc = require('electron').ipcRenderer;
 
 ipc.on('sendclipboard', function (event, clipArr) {
+
     var ul = document.getElementById("clipboard-ul");
     ul.innerHTML = "";
     var li = "";
@@ -17,11 +18,13 @@ ipc.on('sendclipboard', function (event, clipArr) {
 });
 
 function pasteValue(item) {
+    //var ul = document.getElementById("clipboard-ul");
+    //ul.innerHTML = "";
     ipcRenderer.send('paste-command', item);
+    
 }
+
 $(document).ready(function () {
-
-
     $('div.clipboard-container').on('focus', 'li', function () {
         $this = $(this);
         $this.addClass('active').siblings().removeClass();
@@ -45,6 +48,5 @@ $(document).ready(function () {
     }).on('click', 'li', function (event) { 
         pasteValue($(this).text());
     });
-
 
 });

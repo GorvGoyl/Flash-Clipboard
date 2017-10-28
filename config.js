@@ -8,11 +8,14 @@ const WIDTH = 250
 const CLIPBOARDKEY = "mclipboard"
 const TRAY_ICON = "icon"
 
+
 module.exports = {
     TRAY_ICON: path.join(__dirname, TRAY_ICON),
     APP_NAME: APP_NAME,
     OS: process.platform,
     CLIPBOARDKEY : CLIPBOARDKEY,
     WIDTH : WIDTH,
-    TIMEDELAY : TIMEDELAY
+    TIMEDELAY : TIMEDELAY,
+    CLIPBOARD_WIN_PATH: path.join(__dirname, 'index.html'),
+    ABOUT_WIN_PATH: path.join(__dirname, 'about.html')
 }
