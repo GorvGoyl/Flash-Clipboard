@@ -3,7 +3,7 @@
   "productName": "Multicopy Paste",
   "author": "JerryGoyal",
   "license": "ISC",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "Software to maintain list of recently copied text which can be pasted later using a shortcut",
   "homepage": "https://github.com/JerryGoyal/MultiCopy-Paste",
   "main": "main.js",
@@ -16,7 +16,8 @@
     "multicopy paste",
     "mac",
     "windows",
-    "linux"
+    "linux",
+    "software"
   ],
   "scripts": {
     "test": "echo \"Error: no   test specified\" && exit 1",
@@ -34,7 +35,7 @@
     "appId": "com.jerryapps.multicopypaste",
     "win": {
       "icon": "icon.ico",
-      "publisherName": "Gourav Goyal"
+      "publisherName": "JerryApps"
     },
     "nsis": {
       "runAfterFinish": true,
