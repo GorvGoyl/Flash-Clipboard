@@ -7,6 +7,7 @@ const url = require('url')
 const path = require('path')
 const robot = require('robotjs')
 const config = require('./config')
+const { autoUpdater } = require('electron-updater')
 
 let clipboardWindow = null;
 let tray = null;
@@ -264,3 +265,7 @@ app.on('activate', () => {
         initMain()
     }
 })
+
+autoUpdater.checkForUpdatesAndNotify(
+    
+)
