@@ -3,7 +3,7 @@
   "productName": "Multicopy Paste",
   "author": "JerryGoyal",
   "license": "ISC",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Software to maintain list of recently copied text which can be pasted later using a shortcut",
   "homepage": "https://github.com/JerryGoyal/MultiCopy-Paste",
   "main": "main.js",
@@ -29,20 +29,21 @@
   "files": [
     "./icon.ico"
   ],
-  "repository" :
-  { "type" : "git"
-  , "url" : "https://github.com/JerryGoyal/MultiCopy-Paste.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JerryGoyal/MultiCopy-Paste.git"
   },
-  "publish": [{
-    "provider": "github",
-    "owner": "jerrygoyal",
-    "repo": "MultiCopy-Paste"
-}],
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "jerrygoyal",
+      "repo": "MultiCopy-Paste"
+    }
+  ],
   "build": {
     "productName": "Multicopy Paste",
     "copyright": "Copyright © 2017 Gourav Goyal",
     "appId": "com.jerryapps.multicopypaste",
-    
     "win": {
       "icon": "icon.ico",
       "publisherName": "Jerryapps"
@@ -55,7 +56,7 @@
   },
   "dependencies": {
     "electron-json-storage": "^4.0.0",
-    "electron-updater": "^2.15.0",
+    "electron-updater": "^2.15.1",
     "robotjs": "^0.4.7"
   },
   "devDependencies": {

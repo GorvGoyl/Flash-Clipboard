@@ -9,6 +9,7 @@ const robot = require('robotjs')
 const config = require('./config')
 const { autoUpdater } = require('electron-updater')
 
+autoUpdater.allowPrerelease = true;
 let clipboardWindow = null;
 let tray = null;
 let aboutWindow = null;
