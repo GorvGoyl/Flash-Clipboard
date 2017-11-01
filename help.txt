@@ -20,26 +20,36 @@
 - run: electron ./main.js
     (if couldn't run then try build steps one more time and then run)
 
-// Handy NPM commands
-- lists all installed packages:
-npm list
+// How to publish
+By default, electron-updater will try to detect the GitHub settings (such as the repo name and owner) from reading the .git/config
+Optional:
+ {
+     ...
+     "build": {
+         "publish": [{
+             "provider": "github",
+             "owner": "iffy",
+             "repo": "electron-updater-example"
+         }],
+         ...
+     }
+ }
 
-- removes packages not depended on by your project according to your package.json:
-npm prune
+ 1) get access token from https://github.com/settings/tokens/new and check "repo" section
 
-- tells you which installed packages are outdated with respect to what is current in the npm registry but allowable by the version definition in your package.json:
-npm outdated (-g)
+ 2) Windows: set it in terminal: [Environment]::SetEnvironmentVariable("GH_TOKEN","fs949jweksc6d3352fdb2ae4cdecf84jjfvw9vf","User")
 
-- Update all packages listed in package.json:
-npm update
+ 3) update the version in package.json and commit all changes
 
-- Clean npm cache:
-npm cache clean -f
+ 4) run: node_modules/.bin/build --win -p always
+    it'll create a new tag with current version and push the exe to the new DRAFT.
 
+5) got to github repo-> releases and edit and "publish" this draft.
+
+6) update should be avilable in user app. again repeat step 3, 4 and 5 for new release.
 
 
 // to package app
-old way: electron-packager ./ multiCopypaste2 --platform=win32 --arch=x64 --overwrite
 // using electron builder
 - install yarn from https://yarnpkg.com/en/docs/install
 - run in vscode: yarn add electron-builder --dev
@@ -56,3 +66,20 @@ old way: electron-packager ./ multiCopypaste2 --platform=win32 --arch=x64 --over
     "createDesktopShortcut": true,
     "deleteAppDataOnUninstall": true
   }
+
+
+  // Handy NPM commands
+- lists all installed packages:
+npm list
+
+- removes packages not depended on by your project according to your package.json:
+npm prune
+
+- tells you which installed packages are outdated with respect to what is current in the npm registry but allowable by the version definition in your package.json:
+npm outdated (-g)
+
+- Update all packages listed in package.json:
+npm update
+
+- Clean npm cache:
+npm cache clean -f
