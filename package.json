@@ -25,7 +25,8 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps",
-    "publish": "node_modules/.bin/build -p always"
+    "publish": "node_modules/.bin/build -p always",
+    "package": "npx electron-builder"
   },
   "files": [
     "./icon.ico"
