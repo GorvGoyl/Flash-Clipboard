@@ -20,12 +20,12 @@
     "software"
   ],
   "scripts": {
+    "start": "./node_modules/.bin/electron ./main.js",
     "test": "echo \"Error: no   test specified\" && exit 1",
-    "build:mac": "build --mac dir",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps",
-    "publish": "builds -p always"
+    "publish": "node_modules/.bin/build -p always"
   },
   "files": [
     "./icon.ico"
@@ -54,7 +54,7 @@
     "robotjs": "^0.4.7"
   },
   "devDependencies": {
-    "electron": "1.7.9",
-    "electron-builder": "^19.42.2"
+    "electron": "^1.7.9",
+    "electron-builder": "19.43.3"
   }
 }

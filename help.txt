@@ -69,9 +69,13 @@ Optional:
 
 
   // Handy NPM commands
+
+- update all packages to latest version in package.json
+ npm update --save
 - lists all installed packages:
 npm list
-
+- rebuild all node_modules
+ npm install & npm rebuild
 - removes packages not depended on by your project according to your package.json:
 npm prune
 
