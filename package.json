@@ -3,7 +3,7 @@
   "productName": "Multicopy Paste",
   "author": "JerryGoyal",
   "license": "ISC",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Software to maintain list of recently copied text which can be pasted later using a shortcut",
   "homepage": "https://github.com/JerryGoyal/MultiCopy-Paste",
   "main": "main.js",
