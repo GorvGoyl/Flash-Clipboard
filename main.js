@@ -9,7 +9,50 @@ const robot = require('robotjs')
 const config = require('./config')
 const { autoUpdater } = require('electron-updater')
 
+let updater
 autoUpdater.allowPrerelease = true;
+autoUpdater.autoDownload = false;
+autoUpdater.on('update-available', () => {
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'Found Updates',
+        message: 'Found updates, do you want update now?',
+        buttons: ['Sure', 'No']
+    }, (buttonIndex) => {
+        if (buttonIndex === 0) {
+            autoUpdater.downloadUpdate()
+        }
+        else {
+            updater.enabled = true
+            updater = null
+        }
+    })
+})
+autoUpdater.on('error', (event, error) => {
+    dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString())
+})
+autoUpdater.on('update-not-available', () => {
+    dialog.showMessageBox({
+        title: 'No Updates',
+        message: 'Current version is up-to-date.'
+    })
+    updater.enabled = true
+    updater = null
+})
+
+autoUpdater.on('update-downloaded', () => {
+    dialog.showMessageBox({
+        title: 'Install Updates',
+        message: 'Updates downloaded, application will be quit for update...'
+    }, () => {
+        setImmediate(() => autoUpdater.quitAndInstall())
+    })
+})
+
+
+
+
+
 let clipboardWindow = null;
 let tray = null;
 let aboutWindow = null;
@@ -21,6 +64,7 @@ let isDisabled_btnClearClipboard = false;
 
 // init main
 function initMain() {
+    autoUpdater.checkForUpdates()
     if (isSecondInstance()) {
         app.quit();
     }
@@ -35,7 +79,7 @@ function initMain() {
 
 
     // Check for changes at an interval.
-   intervalId = setInterval(check_clipboard_for_changes,config.TIMEDELAY);
+    intervalId = setInterval(check_clipboard_for_changes, config.TIMEDELAY);
 
     globalShortcut.register('CommandOrControl+O', () => {
         showClipboardWindow();
@@ -57,8 +101,8 @@ ipc.on('paste-command', (event, arg) => {
     robot.keyTap("v", "control");
 })
 ipc.on('dom-ready-command', (event, arg) => {
-     //wait for 100ms then show the window.. workaround for dom-ready event
-    setTimeout(function(){
+    //wait for 100ms then show the window.. workaround for dom-ready event
+    setTimeout(function () {
         let point = electron.screen.getCursorScreenPoint();
         clipboardWindow.setPosition(point.x + 20, 20, false);
     }, 100);
@@ -78,7 +122,7 @@ function showClipboardWindow() {
 }
 
 
-function hideClipboardWindow(){
+function hideClipboardWindow() {
     let p = electron.screen.getPrimaryDisplay().size
     clipboardWindow.setPosition(p.height, p.width, false);
     clipboardWindow.minimize();
@@ -88,11 +132,11 @@ function initClipboardWindow() {
     defaultHeight = screenSize.height - 40;
     clipboardWindow = new BrowserWindow({
         minWidth: config.WIDTH, minHeight: defaultHeight,
-        webPreferences:{
-            backgroundThrottling:false
+        webPreferences: {
+            backgroundThrottling: false
         },
-        show: false, hasShadow: true, skipTaskbar: true,backgroundColor:"#f5f5f5",
-        resizable:false,maxWidth: config.WIDTH, thickFrame: false, frame: false
+        show: false, hasShadow: true, skipTaskbar: true, backgroundColor: "#f5f5f5",
+        resizable: false, maxWidth: config.WIDTH, thickFrame: false, frame: false
 
     })
     clipboardWindow.setMenu(null)
@@ -102,7 +146,7 @@ function initClipboardWindow() {
         slashes: true
     }))
     hideClipboardWindow();
-        
+
     // Emitted when the window is closed.
     clipboardWindow.on('closed', () => {
         clipboardWindow = null
@@ -131,36 +175,7 @@ function showAboutWindow() {
     })
 }
 
-function initTray() {
-    tray = new Tray(getTrayIconPath())
-    const template = [
-        {
-            label: 'Pause capturing text', click: function () {
-                pauseplayClipboard();
-            }
-        }, {
-            label: 'Clear Clipboard', click: function () {
-                clearClipboard();
-            }
-        },
-        {
-            label: 'About', click: function () {
-                showAboutWindow();
-            }
-        }, {
-            label: 'Quit', click: function () {
-                app.quit();
-            }
-        }
-    ]
-    contextMenu = Menu.buildFromTemplate(template)
 
-    tray.setToolTip('MultiCopy Paste')
-    tray.setContextMenu(contextMenu)
-    tray.on("double-click",function(){
-        tray.popUpContextMenu();
-    });
-}
 
 function clearClipboard() {
     storage.remove(config.CLIPBOARDKEY, function (error) {
@@ -179,25 +194,21 @@ function btnClearClipboard(action) {
     }
 }
 
-function pauseplayClipboard(){
-    if(intervalId){
+function pauseplayClipboard() {
+    if (intervalId) {
         clearInterval(intervalId);
-        intervalId=null;
+        intervalId = null;
         contextMenu.items[0].label = "Resume capturing text";
-    }else{
+    } else {
         // prevent currently copied text
         last_copied_val = electron.clipboard.readText(String);
-        intervalId = setInterval(check_clipboard_for_changes,config.TIMEDELAY);
+        intervalId = setInterval(check_clipboard_for_changes, config.TIMEDELAY);
         contextMenu.items[0].label = "Pause capturing text";
     }
     tray.setContextMenu(contextMenu);
 }
 
-function getTrayIconPath(){
-    if(config.OS === 'win32')
-     return config.TRAY_ICON + '.ico'
-     return config.TRAY_ICON + '.png'
-}
+
 function copyToClipboard(item) {
     let arr = [];
 
@@ -227,7 +238,7 @@ function copyToClipboard(item) {
     });
 }
 
-app.on('ready', initMain)
+
 
 function isSecondInstance() {
     const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
@@ -241,14 +252,60 @@ function isSecondInstance() {
     return isSecondInstance;
 }
 
-app.setLoginItemSettings({
-    openAtLogin: true,
-    path: process.execPaths
-    // ,args: [
-    //   '--processStart', `"${exeName}"`,
-    //   '--process-start-args', `"--hidden"`
-    // ]
-  })
+
+//################################### TRAY EVENTS ##########################//
+
+function initTray() {
+    tray = new Tray(getTrayIconPath())
+    const template = [
+        {
+            label: 'Pause capturing text', click: function () {
+                pauseplayClipboard();
+            }
+        }, {
+            label: 'Clear Clipboard', click: function () {
+                clearClipboard();
+            }
+        },
+        {
+            label: 'About', click: function () {
+                showAboutWindow();
+            }
+        }, {
+            label: 'Quit', click: function () {
+                app.quit();
+            }
+        }
+    ]
+    contextMenu = Menu.buildFromTemplate(template)
+
+    tray.setToolTip('MultiCopy Paste')
+    tray.setContextMenu(contextMenu)
+    tray.on("double-click", function () {
+        tray.popUpContextMenu();
+    });
+}
+
+function getTrayIconPath() {
+    if (config.OS === 'win32')
+        return config.TRAY_ICON + '.ico'
+    return config.TRAY_ICON + '.png'
+}
+
+//######################## APP EVENTS ##########################//
+
+app.on('ready', function () {
+    initMain();
+    autoUpdater.checkForUpdates();
+})
+app.on('activate', () => {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (clipboardWindow === null) {
+        initMain()
+         autoUpdater.checkForUpdates();
+    }
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -259,14 +316,24 @@ app.on('window-all-closed', () => {
     }
 })
 
-app.on('activate', () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (clipboardWindow === null) {
-        initMain()
-    }
+
+
+
+
+app.setLoginItemSettings({
+    openAtLogin: true,
+    path: process.execPaths
 })
 
-autoUpdater.checkForUpdatesAndNotify(
-    
-)
+//############################# APP UPDATE #############################//
+autoUpdater.on('update-downloaded', (info) => {
+    // setImmediate(() => {
+    //     app.removeAllListeners("window-all-closed")
+    //     if (focusedWindow != null) {
+    //       focusedWindow.close()
+    //     }
+    //     autoUpdater.quitAndInstall(false)
+    //   })
+    setImmediate(() => autoUpdater.quitAndInstall())
+    autoUpdater.quitAndInstall(true,true); 
+  })
