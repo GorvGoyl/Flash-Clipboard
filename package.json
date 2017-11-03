@@ -3,7 +3,7 @@
   "productName": "Multicopy Paste",
   "author": "JerryGoyal",
   "license": "ISC",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Software to maintain list of recently copied text which can be pasted later using a shortcut",
   "homepage": "https://github.com/JerryGoyal/MultiCopy-Paste",
   "main": "main.js",
@@ -21,7 +21,6 @@
   ],
   "scripts": {
     "start": "./node_modules/.bin/electron ./main.js",
-    "test": "echo \"Error: no   test specified\" && exit 1",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps",
