@@ -283,9 +283,9 @@ app.setLoginItemSettings({
 })
 
 //############################# APP UPDATE #############################//
-if (isDev) {
-    autoUpdater.updateConfigPath = path.join(__dirname, 'app-update.yml');
-}
+// if (isDev) {
+//     autoUpdater.updateConfigPath = path.join(__dirname, 'app-update.yml');
+// }
 autoUpdater.allowPrerelease = true;
 
 autoUpdater.on('update-downloaded', (info) => {
