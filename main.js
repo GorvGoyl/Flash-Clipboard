@@ -265,7 +265,7 @@ function initTray() {
     ]
     contextMenu = Menu.buildFromTemplate(template)
 
-    tray.setToolTip('MultiCopy Paste' + (tray_isPause ? ' Stauts: Paused' : ''))
+    tray.setToolTip('MultiCopy Paste' + (tray_isPause ? ' Status: Paused' : ''))
     tray.setContextMenu(contextMenu)
 }
 
