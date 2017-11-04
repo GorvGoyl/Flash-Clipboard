@@ -18,7 +18,12 @@ ipc.on('sendclipboard', function (event, clipArr) {
     $('li:first-child').next().focus().addClass("active");
     else  $('li:first-child').focus().addClass("active");
 
-    ipcRenderer.send('dom-ready-command');
+    let pageHeight = ( $('body').outerHeight(true));
+    $('html').height(Math.ceil(pageHeight));
+    //$(window).resize(pageHeight);
+    let pixelPefect = 3;
+    let electronWindowHt = Math.ceil(pageHeight)+pixelPefect;
+    ipcRenderer.send('dom-ready-command',electronWindowHt);
 });
 
 ipc.on('clearHtmlList', function (event) {

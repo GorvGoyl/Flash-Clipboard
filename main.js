@@ -15,11 +15,11 @@ let clipboardWindow = null;
 let tray = null;
 let aboutWindow = null;
 let last_copied_val = "";
-let defaultHeight;
 let contextMenu;
 let intervalId;
 let isDisabled_btnClearClipboard = false;
-
+let mouseMargin = 20;
+let screenMargin = 40;
 // init main
 function initMain() {
     if (isSecondInstance()) {
@@ -52,18 +52,7 @@ function check_clipboard_for_changes() {
         last_copied_val = item;
     }
 }
-ipc.on('paste-command', (event, arg) => {
-    hideClipboardWindow();
-    clipboard.writeText(arg);
-    robot.keyTap("v", "control");
-})
-ipc.on('dom-ready-command', (event, arg) => {
-    //wait for 100ms then show the window.. workaround for dom-ready event
-    setTimeout(function () {
-        let point = electron.screen.getCursorScreenPoint();
-        clipboardWindow.setPosition(point.x + 20, 20, false);
-    }, 100);
-})
+
 
 function showClipboardWindow() {
     let arr = [];
@@ -77,23 +66,51 @@ function showClipboardWindow() {
         clipboardWindow.webContents.send('sendclipboard', arr);
     });
 }
+ipc.on('paste-command', (event, arg) => {
+    hideClipboardWindow();
+    clipboard.writeText(arg);
+    robot.keyTap("v", "control");
+})
+ipc.on('dom-ready-command', (event, height) => {
+    //wait for 100ms then show the window.. workaround for flicker effect
+    setTimeout(function () {
+        let mouse = electron.screen.getCursorScreenPoint();
+        let clipwin_y, clipwin_x;
+        let screen = electron.screen.getPrimaryDisplay().size;
+        clipboardWindow.setSize(config.WIDTH, height, false);
+        let clipwin_ht = clipboardWindow.getSize()[1];
+        
+        clipwin_x = mouse.x + mouseMargin - Math.max(0, mouse.x + mouseMargin + config.WIDTH - screen.width);
+        
+        if (mouse.y - mouseMargin + clipwin_ht <= screen.height - screenMargin)
+            clipwin_y = Math.max(mouse.y - mouseMargin,screenMargin);
+        else {
+            // clip window is partially out of screen so move the window up
+            let diff_ht = mouse.y + mouseMargin + clipwin_ht - (screen.height - screenMargin);
 
+            clipwin_y = mouse.y + mouseMargin - diff_ht;
+            clipwin_y =Math.max(screenMargin,clipwin_y);
+        }
+
+        clipboardWindow.setPosition(clipwin_x, clipwin_y, false);
+    }, 100);
+})
 
 function hideClipboardWindow() {
-    let p = electron.screen.getPrimaryDisplay().size
-    clipboardWindow.setPosition(p.height, p.width, false);
+    let screen = electron.screen.getPrimaryDisplay().size
+    clipboardWindow.setPosition(screen.height, screen.width, false);
     clipboardWindow.minimize();
 }
 function initClipboardWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
-    defaultHeight = screenSize.height - 40;
+    let maxHeight = screenSize.height - 80;
     clipboardWindow = new BrowserWindow({
-        minWidth: config.WIDTH, minHeight: defaultHeight,
+        minWidth: config.WIDTH,
         webPreferences: {
             backgroundThrottling: false
         },
         show: false, hasShadow: true, skipTaskbar: true, backgroundColor: "#f5f5f5",
-        resizable: false, maxWidth: config.WIDTH, thickFrame: false, frame: false
+        resizable: false, maxWidth: config.WIDTH, maxHeight: maxHeight, thickFrame: false, frame: false
 
     })
     clipboardWindow.setMenu(null)
@@ -260,7 +277,7 @@ app.on('activate', () => {
     // dock icon is clicked and there are no other windows open.
     if (clipboardWindow === null) {
         initMain()
-         autoUpdater.checkForUpdates();
+        autoUpdater.checkForUpdates();
     }
 })
 
@@ -296,21 +313,21 @@ autoUpdater.on('update-downloaded', (info) => {
     //     }
     //     autoUpdater.quitAndInstall(false)
     //   })
-    setImmediate(() => autoUpdater.quitAndInstall(true,true))
+    setImmediate(() => autoUpdater.quitAndInstall(true, true))
     //autoUpdater.quitAndInstall(true,true); 
-  })
+})
 
-  autoUpdater.on('checking-for-update', () => {
+autoUpdater.on('checking-for-update', () => {
     sendStatusToWindow('Checking for update...');
-  })
-  autoUpdater.on('update-available', (info) => {
+})
+autoUpdater.on('update-available', (info) => {
     sendStatusToWindow('Update available.');
-  })
-  autoUpdater.on('update-not-available', (info) => {
+})
+autoUpdater.on('update-not-available', (info) => {
     sendStatusToWindow('Update not available.');
-  })
-  autoUpdater.on('error', (err) => {
+})
+autoUpdater.on('error', (err) => {
     sendStatusToWindow('Error in auto-updater. ' + err);
-  })
+})
 
-  function sendStatusToWindow(e){console.log(e)}
+function sendStatusToWindow(e) { console.log(e) }
