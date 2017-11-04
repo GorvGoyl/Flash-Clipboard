@@ -20,6 +20,9 @@ let intervalId;
 let isDisabled_btnClearClipboard = false;
 let mouseMargin = 20;
 let screenMargin = 40;
+let tray_isPause = false;
+//https://github.com/electron/electron/blob/master/docs/api/accelerator.md
+let KEY_OPEN = 'CmdOrCtrl+Shift+O';
 // init main
 function initMain() {
     if (isSecondInstance()) {
@@ -27,7 +30,11 @@ function initMain() {
     }
     initClipboardWindow();
     initTray();
-
+    if (tray) {
+        tray.on("double-click", function () {
+            tray.popUpContextMenu();
+        });
+    }
     // hide on blur
     clipboardWindow.on('blur', function (event) {
         //clipboardWindow.webContents.send('clearHtmlList');
@@ -38,7 +45,7 @@ function initMain() {
     // Check for changes at an interval.
     intervalId = setInterval(check_clipboard_for_changes, config.TIMEDELAY);
 
-    globalShortcut.register('CommandOrControl+O', () => {
+    globalShortcut.register(KEY_OPEN, () => {
         showClipboardWindow();
     })
 
@@ -69,7 +76,7 @@ function showClipboardWindow() {
 ipc.on('paste-command', (event, arg) => {
     hideClipboardWindow();
     clipboard.writeText(arg);
-    robot.keyTap("v", "control");
+    robot.keyTap("v", ["command", "control"]);
 })
 ipc.on('dom-ready-command', (event, height) => {
     //wait for 100ms then show the window.. workaround for flicker effect
@@ -79,17 +86,17 @@ ipc.on('dom-ready-command', (event, height) => {
         let screen = electron.screen.getPrimaryDisplay().size;
         clipboardWindow.setSize(config.WIDTH, height, false);
         let clipwin_ht = clipboardWindow.getSize()[1];
-        
+
         clipwin_x = mouse.x + mouseMargin - Math.max(0, mouse.x + mouseMargin + config.WIDTH - screen.width);
-        
+
         if (mouse.y - mouseMargin + clipwin_ht <= screen.height - screenMargin)
-            clipwin_y = Math.max(mouse.y - mouseMargin,screenMargin);
+            clipwin_y = Math.max(mouse.y - mouseMargin, screenMargin);
         else {
             // clip window is partially out of screen so move the window up
             let diff_ht = mouse.y + mouseMargin + clipwin_ht - (screen.height - screenMargin);
 
             clipwin_y = mouse.y + mouseMargin - diff_ht;
-            clipwin_y =Math.max(screenMargin,clipwin_y);
+            clipwin_y = Math.max(screenMargin, clipwin_y);
         }
 
         clipboardWindow.setPosition(clipwin_x, clipwin_y, false);
@@ -169,17 +176,21 @@ function btnClearClipboard(action) {
 }
 
 function pauseplayClipboard() {
+    let label;
+    // pause clipboard
     if (intervalId) {
         clearInterval(intervalId);
         intervalId = null;
-        contextMenu.items[0].label = "Resume capturing text";
+        tray_isPause = true;
     } else {
+        //resume clipboard
         // prevent currently copied text
         last_copied_val = electron.clipboard.readText(String);
         intervalId = setInterval(check_clipboard_for_changes, config.TIMEDELAY);
-        contextMenu.items[0].label = "Pause capturing text";
+        tray_isPause = false;
     }
-    tray.setContextMenu(contextMenu);
+    tray.destroy();
+    initTray();
 }
 
 
@@ -231,9 +242,10 @@ function isSecondInstance() {
 
 function initTray() {
     tray = new Tray(getTrayIconPath())
+    contextMenu = '';
     const template = [
         {
-            label: 'Pause capturing text', click: function () {
+            label: tray_isPause ? config.TRAY_RESUME_CAPTURE_LABEL : config.TRAY_PAUSE_CAPTURE_LABEL, click: function () {
                 pauseplayClipboard();
             }
         }, {
@@ -253,11 +265,8 @@ function initTray() {
     ]
     contextMenu = Menu.buildFromTemplate(template)
 
-    tray.setToolTip('MultiCopy Paste')
+    tray.setToolTip('MultiCopy Paste' + (tray_isPause ? ' Stauts: Paused' : ''))
     tray.setContextMenu(contextMenu)
-    tray.on("double-click", function () {
-        tray.popUpContextMenu();
-    });
 }
 
 function getTrayIconPath() {

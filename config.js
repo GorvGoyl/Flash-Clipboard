@@ -2,20 +2,16 @@
 const path = require('path')
 const electron = require('electron')
 const url = require('url')
-const APP_NAME = 'Multicopy Paste'
-const TIMEDELAY = 500
-const WIDTH = 250
-const CLIPBOARDKEY = "mclipboard"
-const TRAY_ICON = "icon"
-
-
 module.exports = {
-    TRAY_ICON: path.join(__dirname, TRAY_ICON),
-    APP_NAME: APP_NAME,
+    TRAY_ICON: path.join(__dirname, 'icon'),
+    APP_NAME: 'Multicopy Paste',
     OS: process.platform,
-    CLIPBOARDKEY : CLIPBOARDKEY,
-    WIDTH : WIDTH,
-    TIMEDELAY : TIMEDELAY,
+    CLIPBOARDKEY : "mclipboard",
+    WIDTH : 250,
+    TIMEDELAY : 500,
     CLIPBOARD_WIN_PATH: path.join(__dirname, 'index.html'),
-    ABOUT_WIN_PATH: path.join(__dirname, 'about.html')
+    ABOUT_WIN_PATH: path.join(__dirname, 'about.html'),
+    TRAY_PAUSE_CAPTURE_LABEL: "Pause capturing text",
+    TRAY_RESUME_CAPTURE_LABEL: "Resume capturing text"
+
 }
