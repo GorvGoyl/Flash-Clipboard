@@ -49,8 +49,7 @@ Optional:
 6) update should be avilable in user app. again repeat step 3, 4 and 5 for new release.
 
 
-// How to package app
-// using electron builder
+// How to package app using electron builder
 - install yarn from https://yarnpkg.com/en/docs/install
 - run in vscode: yarn add electron-builder --dev
 - configure package.json follow https://www.electron.build
@@ -58,7 +57,11 @@ Optional:
 //artifactName String - The artifact file name template. Defaults to ${productName} Setup ${version}.${ext}
 //can use glob ["**/*", "build/icon.*"]
  
-
+// how to sign app while packagaing
+- generate selfsign certificate for windows
+- add "certificateFile" : "certificate.pfx" to package.json
+ - add CSC_KEY_PASSWORD to env variable with password as value
+- run npm electron-builder
 "nsis": {
     "runAfterFinish": true,
     "installerIcon": "icon.ico",

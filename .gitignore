@@ -58,3 +58,5 @@ typings/
 .env
 
 electron-builder.env
+selfsigncert.pfx
+selfsigncert.pfx

@@ -40,7 +40,8 @@
     "appId": "com.jerrymadeapps.multicopypaste",
     "win": {
       "icon": "icon.ico",
-      "publisherName": "jerrymadeapps"
+      "publisherName": "jerrymadeapps",
+      "certificateFile" : "selfsigncert.pfx"
     },
     "nsis": {
       "runAfterFinish": true,
