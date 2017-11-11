@@ -116,6 +116,7 @@ function initClipboardWindow() {
         webPreferences: {
             backgroundThrottling: false
         },
+        useContentSize: true,
         show: false, hasShadow: true, skipTaskbar: true, backgroundColor: "#f5f5f5",
         resizable: false, maxWidth: config.WIDTH, maxHeight: maxHeight, thickFrame: false, frame: false
 
