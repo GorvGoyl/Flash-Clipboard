@@ -84,7 +84,7 @@ ipc.on('dom-ready-command', (event, height) => {
         let mouse = electron.screen.getCursorScreenPoint();
         let clipwin_y, clipwin_x;
         let screen = electron.screen.getPrimaryDisplay().size;
-        clipboardWindow.setSize(config.WIDTH, height, false);
+        
         let clipwin_ht = clipboardWindow.getSize()[1];
 
         clipwin_x = mouse.x + mouseMargin - Math.max(0, mouse.x + mouseMargin + config.WIDTH - screen.width);
@@ -100,6 +100,7 @@ ipc.on('dom-ready-command', (event, height) => {
         }
 
         clipboardWindow.setPosition(clipwin_x, clipwin_y, false);
+        clipboardWindow.setSize(config.WIDTH, Math.ceil(height), false);
     }, 100);
 })
 

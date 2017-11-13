@@ -19,10 +19,7 @@ ipc.on('sendclipboard', function (event, clipArr) {
     else  $('li:first-child').focus().addClass("active");
 
     let pageHeight = ( $('body').outerHeight(true));
-    $('html').height(Math.ceil(pageHeight));
-    //$(window).resize(pageHeight);
-    let pixelPefect = 3;
-    let electronWindowHt = Math.ceil(pageHeight)+pixelPefect;
+    let electronWindowHt = (pageHeight);
     ipcRenderer.send('dom-ready-command',electronWindowHt);
 });
 

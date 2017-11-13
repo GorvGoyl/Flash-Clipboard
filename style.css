@@ -2,17 +2,14 @@
     display: none; 
 }
 .clipboard-container {
-    border-color:black;
+    border:1px solid slategray;
     overflow:auto;
+    padding: 8px;
 }
 
-html{
-    border-style: solid;
-    border-color: slategray;
-    border-width: medium;
-}
 body{
     background-color:whitesmoke;
+    margin: 0px;
 }
 
 .active{
