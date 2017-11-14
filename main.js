@@ -1,7 +1,7 @@
 'use strict';
 const { app, Menu, BrowserWindow, globalShortcut, clipboard, Tray } = require('electron')
 const electron = require('electron')
-const ipc = require('electron').ipcMain
+const ipcMain = require('electron').ipcMain
 const storage = require('electron-json-storage')
 const url = require('url')
 const path = require('path')
@@ -9,7 +9,7 @@ const robot = require('robotjs')
 const config = require('./config')
 const { autoUpdater } = require('electron-updater')
 const isDev = require('electron-is-dev');
-
+var log = require('electron-log');
 
 let clipboardWindow = null;
 let tray = null;
@@ -73,18 +73,18 @@ function showClipboardWindow() {
         clipboardWindow.webContents.send('sendclipboard', arr);
     });
 }
-ipc.on('paste-command', (event, arg) => {
+ipcMain.on('paste-command', (event, arg) => {
     hideClipboardWindow();
     clipboard.writeText(arg);
     robot.keyTap("v", ["command", "control"]);
 })
-ipc.on('dom-ready-command', (event, height) => {
+ipcMain.on('dom-ready-command', (event, height) => {
     //wait for 100ms then show the window.. workaround for flicker effect
     setTimeout(function () {
         let mouse = electron.screen.getCursorScreenPoint();
         let clipwin_y, clipwin_x;
         let screen = electron.screen.getPrimaryDisplay().size;
-        
+
         let clipwin_ht = clipboardWindow.getSize()[1];
 
         clipwin_x = mouse.x + mouseMargin - Math.max(0, mouse.x + mouseMargin + config.WIDTH - screen.width);
@@ -328,17 +328,28 @@ autoUpdater.on('update-downloaded', (info) => {
     //autoUpdater.quitAndInstall(true,true); 
 })
 
-autoUpdater.on('checking-for-update', () => {
-    sendStatusToWindow('Checking for update...');
-})
-autoUpdater.on('update-available', (info) => {
-    sendStatusToWindow('Update available.');
-})
-autoUpdater.on('update-not-available', (info) => {
-    sendStatusToWindow('Update not available.');
-})
+
 autoUpdater.on('error', (err) => {
-    sendStatusToWindow('Error in auto-updater. ' + err);
+    log.error('Error in auto-updater: ' + err);
 })
 
-function sendStatusToWindow(e) { console.log(e) }
+
+//##################### ERROR HANDLING #########################//
+ipcMain.on('render-err', function (event, source, err) {
+    var str = source + ': ';
+
+    if (err != null) {
+        if (err.stack != null) {
+            str += err.stack;
+        } else if (err.message != null) {
+            str += err.message;
+        }
+    }
+
+    log.error('Error in renderer: ' + str);
+})
+
+process.on('uncaughtException', function (err) {
+    log.error('uncaughtException: ' + err);
+})
+

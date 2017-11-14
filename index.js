@@ -13,31 +13,37 @@ ipc.on('sendclipboard', function (event, clipArr) {
         ul.appendChild(li);
     }
 
- // default focus on 2nd element
- if(clipArr.length>1)
-    $('li:first-child').next().focus().addClass("active");
-    else  $('li:first-child').focus().addClass("active");
+    // default focus on 2nd element
+    if (clipArr.length > 1)
+        $('li:first-child').next().focus().addClass("active");
+    else $('li:first-child').focus().addClass("active");
 
-    let pageHeight = ( $('body').outerHeight(true));
+    let pageHeight = ($('body').outerHeight(true));
     let electronWindowHt = (pageHeight);
-    ipcRenderer.send('dom-ready-command',electronWindowHt);
+    ipcRenderer.send('dom-ready-command', electronWindowHt);
 });
 
 ipc.on('clearHtmlList', function (event) {
-    clearHtmlList();});
-// $(window).bind("beforeunload", function() { 
-//     clearHtmlList(); 
-// })
+    clearHtmlList();
+});
+function objFromError(err, filter, space) {
+    var plainObject = {};
+    Object.getOwnPropertyNames(err).forEach(function (key) {
+        plainObject[key] = err[key];
+    });
+
+    return plainObject;
+};
+
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+    ipcRenderer.send('render-err', 'main', objFromError(error));
+}
 function pasteValue(item) {
     clearHtmlList();
-    // if(ipcRenderer.sendSync('paste-command', item())){
-    //     clearHtmlList();
-    // }
     ipcRenderer.send('paste-command', item);
-    
 }
 
-function clearHtmlList(){
+function clearHtmlList() {
     $('#clipboard-ul').empty();
 }
 
@@ -62,7 +68,7 @@ $(document).ready(function () {
         $(this).focus().addClass('active').siblings().removeClass();;
     }).on('mouseleave', 'li', function (event) {
         $(this).removeClass('active');
-    }).on('click', 'li', function (event) { 
+    }).on('click', 'li', function (event) {
         pasteValue($(this).text());
     });
 

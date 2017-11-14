@@ -2,9 +2,14 @@
     display: none; 
 }
 .clipboard-container {
-    border:1px solid slategray;
+    /* border:1px solid slategray; */
     overflow:auto;
-    padding: 8px;
+    padding: 10px;
+    /* text-shadow: 1px 1px 15px lightslategrey; */
+    -webkit-box-shadow: inset 0px 0px 22px 6px rgba(0,0,0,0.75);
+    -moz-box-shadow: inset 0px 0px 22px 6px rgba(0,0,0,0.75);
+    box-shadow: inset 0px 0px 4px 1px rgba(0,0,0, 0.75);
+    
 }
 
 body{
