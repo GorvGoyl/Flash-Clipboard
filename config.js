@@ -9,7 +9,7 @@ module.exports = {
     CLIPBOARDKEY : "mclipboard",
     WIDTH : 250,
     TIMEDELAY : 500,
-    CLIPBOARD_WIN_PATH: path.join(__dirname, 'index.html'),
+    CLIPBOARD_WIN_PATH: path.join(__dirname, 'clipboard.html'),
     ABOUT_WIN_PATH: path.join(__dirname, 'about.html'),
     TRAY_PAUSE_CAPTURE_LABEL: "Pause capturing text",
     TRAY_RESUME_CAPTURE_LABEL: "Resume capturing text"

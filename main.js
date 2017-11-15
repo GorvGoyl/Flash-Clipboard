@@ -26,6 +26,7 @@ let KEY_OPEN = 'CmdOrCtrl+Shift+O';
 // init main
 function initMain() {
     if (isSecondInstance()) {
+        displayBalloon();
         app.quit();
     }
     initClipboardWindow();
@@ -49,6 +50,20 @@ function initMain() {
         showClipboardWindow();
     })
 
+
+}
+
+// show info after install
+function initFirstRun() {
+    storage.get('firstrun', function (error, data) {
+        if (!data) {
+        displayBalloon();
+            storage.set('firstrun', { firstrun: true }, function (error) {
+            });
+        }
+
+
+    });
 
 }
 
@@ -271,6 +286,10 @@ function initTray() {
     tray.setContextMenu(contextMenu)
 }
 
+function displayBalloon(){
+    tray.displayBalloon({ title: 'Multi-Copy Paste', 'content': 'Access app settings from tray menu.' });
+}
+
 function getTrayIconPath() {
     if (config.OS === 'win32')
         return config.TRAY_ICON + '.ico'
@@ -282,6 +301,7 @@ function getTrayIconPath() {
 app.on('ready', function () {
     initMain();
     autoUpdater.checkForUpdates();
+    initFirstRun();
 })
 app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
@@ -289,6 +309,7 @@ app.on('activate', () => {
     if (clipboardWindow === null) {
         initMain()
         autoUpdater.checkForUpdates();
+        initFirstRun();
     }
 })
 
