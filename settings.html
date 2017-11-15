@@ -10,30 +10,44 @@
     <script>if (window.module) module = window.module;</script>
     <link rel="stylesheet" type="text/css" href="renderer.css">
 
-    <form action="javascript:alert('hi')">
+    <form class="settings-form" action="javascript:alert('hi')">
         <fieldset>
-          <legend>Settings</legend>
-           Shortcut to Show clipboard
-           <input type="checkbox" name="alt" value=""> Alt
-           <input type="checkbox" name="shift" value=""> Shift
-           <input type="checkbox" name="ctrl" value=""> Ctrl
-          <input type="text" maxlength=1 name="key" value="">
-          <br><br>
-          Store max items 
-          <input type="number" name="items"
-         min="5" max="100" step="10" value="">
-          <br><br>
-          Max popup width
-          <input type="number" name="width"
-         min="100" max="1000" step="50" value="">
-          <br><br>
-          <input type="checkbox" name="run" value="">
-          Run on Startup
-          <br><br>
-          
-          <input type="submit" value="Submit">
+            <legend>Settings</legend>
+            <div>
+                <span>Shortcut to Show clipboard</span>
+                <span>
+                    <input type="checkbox" name="alt" value=""> Alt
+                    <input type="checkbox" name="shift" value=""> Shift
+                    <input type="checkbox" name="ctrl" value=""> Ctrl
+                </span>
+                <span>
+                    <input type="text" maxlength=1 name="key" value="">
+                </span>
+            </div>
+            <div>
+                <span>Store max items </span>
+                <span>
+                    <input type="number" name="items" min="5" max="100" step="10" value="">
+                </span>
+            </div>
+            <div>
+                <span>Max popup width</span>
+                <span>
+                    <input type="number" name="width" min="100" max="1000" step="50" value="">
+                </span>
+            </div>
+            <div>
+                <span>
+                    <input type="checkbox" name="run" value="">
+                </span>
+                <span> Run on Startup</span>
+            </div>
+            <div>
+
+                <input type="submit" value="Submit">
+            </div>
         </fieldset>
-      </form>
+    </form>
 
 </body>
 
