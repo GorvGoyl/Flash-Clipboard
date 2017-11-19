@@ -1,11 +1,11 @@
 {
-  "name": "multicopy-paste",
-  "productName": "Multicopy Paste",
+  "name": "flash-clipboard",
+  "productName": "Flash Clipboard",
   "author": "JerryGoyal",
   "license": "ISC",
   "version": "0.1.0",
   "description": "Software to maintain list of recently copied text which can be pasted later using a shortcut",
-  "homepage": "https://github.com/JerryGoyal/MultiCopy-Paste",
+  "homepage": "https://github.com/JerryGoyal/Flash-Clipboard",
   "main": "main.js",
   "keywords": [
     "desktop",
@@ -13,7 +13,7 @@
     "electron-app",
     "clipboard",
     "multi copy paste",
-    "multicopy paste",
+    "Flash Clipboard",
     "mac",
     "windows",
     "linux",
@@ -31,14 +31,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/JerryGoyal/MultiCopy-Paste.git"
+    "url": "https://github.com/JerryGoyal/Flash-Clipboard.git"
   },
   "build": {
-    "productName": "Multicopy Paste",
+    "productName": "Flash Clipboard",
     "copyright": "Copyright © 2017 Gourav Goyal",
-    "appId": "com.jerrymadeapps.multicopypaste",
+    "appId": "com.jerrymadeapps.flashclipboard",
     "win": {
-      "icon": "./img/multicopypaste.ico",
+      "icon": "./img/flashclipboard.ico",
       "publisherName": "jerrymadeapps",
       "certificateFile": "selfsigncert.pfx"
     },

@@ -80,8 +80,8 @@ function showClipboardWindow() {
     let arr = [];
     storage.get(config.CLIPBOARDKEY, function (error, data) {
         if (error) throw error;
-        if (data && data.mclipboard) {
-            arr = data.mclipboard;
+        if (data && data.fclipboard) {
+            arr = data.fclipboard;
         }
         clipboardWindow.show();
         clipboardWindow.webContents.focus();
@@ -219,8 +219,8 @@ function copyToClipboard(item) {
     // get arr from system
     storage.get(config.CLIPBOARDKEY, function (error, data) {
         if (error) throw error;
-        if (data && data.mclipboard) {
-            arr = data.mclipboard;
+        if (data && data.fclipboard) {
+            arr = data.fclipboard;
         }
 
         //remove duplicate of this item
@@ -233,7 +233,7 @@ function copyToClipboard(item) {
         }
 
         // store the arr back to system
-        storage.set(config.CLIPBOARDKEY, { mclipboard: arr }, function (error) {
+        storage.set(config.CLIPBOARDKEY, { fclipboard: arr }, function (error) {
             if (error) throw error;
             if (isDisabled_btnClearClipboard) {
                 btnClearClipboard("enable");
@@ -284,12 +284,12 @@ function initTray() {
     ]
     contextMenu = Menu.buildFromTemplate(template)
 
-    tray.setToolTip('MultiCopy Paste' + (tray_isPause ? ' Status: Paused' : ''))
+    tray.setToolTip('Flash Clipboard' + (tray_isPause ? ' Status: Paused' : ''))
     tray.setContextMenu(contextMenu)
 }
 
 function displayBalloon(){
-    tray.displayBalloon({ title: 'Multi-Copy Paste', 'content': 'Access app settings from tray menu.' });
+    tray.displayBalloon({ title: 'Flash Clipboard', 'content': 'Access app settings from tray menu.' });
 }
 
 function getTrayIconPath() {

@@ -3,10 +3,10 @@ const path = require('path')
 const electron = require('electron')
 const url = require('url')
 module.exports = {
-    TRAY_ICON: path.join(__dirname,'../','/img/', 'multicopypaste'),
-    APP_NAME: 'Multicopy Paste',
+    TRAY_ICON: path.join(__dirname,'../','/img/', 'flashclipboard'),
+    APP_NAME: 'Flash Clipboard',
     OS: process.platform,
-    CLIPBOARDKEY : "mclipboard",
+    CLIPBOARDKEY : "fclipboard",
     WIDTH : 250,
     TIMEDELAY : 500,
     CLIPBOARD_PAGE: path.join(__dirname,'../', 'clipboard.html'),

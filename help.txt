@@ -5,7 +5,7 @@
 - install electron either globally or local to project (my electron version: 1.7.9)
     for globally: npm install electron -g
     for locally (run in vscode terminal after opening project): npm install electron --save-dev --save-exact
-- clone repo from github https://github.com/JerryGoyal/MultiCopy-Paste
+- clone repo from github https://github.com/JerryGoyal/Flash-Clipboard
 - open with vscode
 
 // How to build
