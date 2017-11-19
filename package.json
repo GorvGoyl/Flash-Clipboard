@@ -28,7 +28,6 @@
     "package": "npx electron-builder"
   },
   "files": [
-    "./icon.ico"
   ],
   "repository": {
     "type": "git",
@@ -39,7 +38,7 @@
     "copyright": "Copyright © 2017 Gourav Goyal",
     "appId": "com.jerrymadeapps.multicopypaste",
     "win": {
-      "icon": "icon.ico",
+      "icon": "./img/multicopypaste.ico",
       "publisherName": "jerrymadeapps",
       "certificateFile": "selfsigncert.pfx"
     },
@@ -47,7 +46,7 @@
       "runAfterFinish": true,
       "createDesktopShortcut": true,
       "deleteAppDataOnUninstall": true,
-      "include": "build/installer.nsh"
+      "include": "./build/installer.nsh"
     }
   },
   "dependencies": {

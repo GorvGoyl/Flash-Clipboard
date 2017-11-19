@@ -5,43 +5,59 @@
     <!-- Insert this line above script imports  -->
     <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
     <!-- <script src="jquery.min.js"></script> -->
-    <script src="renderer.js"></script>
+    <script src="js/jquery-3.2.1.slim.min.js"></script>
+    <script src="js/renderer.js"></script>
     <!-- Insert this line after script imports -->
     <script>if (window.module) module = window.module;</script>
-    <link rel="stylesheet" type="text/css" href="renderer.css">
+    <link rel="stylesheet" type="text/css" href="css/renderer.css">
 
     <form class="settings-form" action="javascript:alert('hi')">
         <fieldset>
             <legend>Settings</legend>
-            <div>
-                <span>Shortcut to Show clipboard</span>
-                <span>
-                    <input type="checkbox" name="alt" value=""> Alt
-                    <input type="checkbox" name="shift" value=""> Shift
-                    <input type="checkbox" name="ctrl" value=""> Ctrl
-                </span>
-                <span>
-                    <input type="text" maxlength=1 name="key" value="">
-                </span>
+            <div class="settinngs-container">
+                <div class="settinngs-cols">
+                    <div>
+                        <span>Shortcut to Show clipboard</span>
+                    </div>
+                    <div>
+                        <span>Store max items </span>
+                    </div>
+                    <div>
+                        <span>Max popup width</span>
+                    </div>
+                    <div>
+                        <span>
+                            <input type="checkbox" name="run" value="">
+                        </span>
+                        <span> Run on Startup</span>
+                    </div>
+                </div>
+                <div class="settinngs-cols">
+                    <div>
+                        <span>
+                            <input type="checkbox" name="alt" value=""> Alt
+                            <input type="checkbox" name="shift" value=""> Shift
+                            <input type="checkbox" name="ctrl" value=""> Ctrl
+                        </span>
+                        <span>
+                            <input id="shortcut-key-input" type="text" maxlength=1 name="key" value="">
+                        </span>
+                    </div>
+                    <div>
+                        <span>
+                            <input type="number" name="items" min="5" max="100" step="10" value="">
+                        </span>
+                    </div>
+                    <div>
+                        <span>
+                            <input type="number" name="width" min="100" max="1000" step="50" value="">
+                        </span>
+                    </div>
+                </div>
+
+                <div style="clear:both;"></div>
             </div>
-            <div>
-                <span>Store max items </span>
-                <span>
-                    <input type="number" name="items" min="5" max="100" step="10" value="">
-                </span>
-            </div>
-            <div>
-                <span>Max popup width</span>
-                <span>
-                    <input type="number" name="width" min="100" max="1000" step="50" value="">
-                </span>
-            </div>
-            <div>
-                <span>
-                    <input type="checkbox" name="run" value="">
-                </span>
-                <span> Run on Startup</span>
-            </div>
+            
             <div>
 
                 <input type="submit" value="Submit">

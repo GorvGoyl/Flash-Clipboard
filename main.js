@@ -6,7 +6,7 @@ const storage = require('electron-json-storage')
 const url = require('url')
 const path = require('path')
 const robot = require('robotjs')
-const config = require('./config')
+const config = require('./js/config')
 const { autoUpdater } = require('electron-updater')
 const isDev = require('electron-is-dev');
 var log = require('electron-log');
@@ -91,7 +91,8 @@ function showClipboardWindow() {
 ipcMain.on('paste-command', (event, arg) => {
     hideClipboardWindow();
     clipboard.writeText(arg);
-    robot.keyTap("v", ["command", "control"]);
+    //"command",
+    robot.keyTap("v", ["control"]);
 })
 ipcMain.on('dom-ready-command', (event, height) => {
     //wait for 100ms then show the window.. workaround for flicker effect
@@ -139,7 +140,7 @@ function initClipboardWindow() {
     })
     clipboardWindow.setMenu(null)
     clipboardWindow.loadURL(url.format({
-        pathname: config.CLIPBOARD_WIN_PATH,
+        pathname: config.CLIPBOARD_PAGE,
         protocol: 'file:',
         slashes: true
     }))
@@ -156,13 +157,14 @@ function showAboutWindow() {
         aboutWindow = new BrowserWindow({
             width: 400, height: 300,
             backgroundThrottling: false, show: false, thickFrame: false,
-            hasShadow: true, resizable: false, maximizable: false, minimizable: false,
-            alwaysOnTop: true,
+            hasShadow: true, alwaysOnTop: true,
+            resizable: false, maximizable: false, minimizable: false,
+            
             frame: true, skipTaskbar: true
         })
         aboutWindow.setMenu(null)
         aboutWindow.loadURL(url.format({
-            pathname: config.ABOUT_WIN_PATH,
+            pathname: config.ABOUT_PAGE,
             protocol: 'file:',
             slashes: true
         }))
@@ -366,11 +368,12 @@ ipcMain.on('render-err', function (event, source, err) {
             str += err.message;
         }
     }
-
+    console.log('Error in renderer: ' + str);
     log.error('Error in renderer: ' + str);
 })
 
 process.on('uncaughtException', function (err) {
     log.error('uncaughtException: ' + err);
+    console.log('uncaughtException: ' + err);
 })
 
