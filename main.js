@@ -14,6 +14,7 @@ var log = require('electron-log');
 let clipboardWindow = null;
 let tray = null;
 let aboutWindow = null;
+let settingsWindow = null;
 let last_copied_val = "";
 let contextMenu;
 let intervalId;
@@ -22,51 +23,51 @@ let mouseMargin = 20;
 let screenMargin = 40;
 let tray_isPause = false;
 //https://github.com/electron/electron/blob/master/docs/api/accelerator.md
-let KEY_OPEN = 'CmdOrCtrl+Shift+O';
 // init main
 function initMain() {
     if (isSecondInstance()) {
         displayBalloon();
         app.quit();
     }
-    initClipboardWindow();
-    initTray();
-    if (tray) {
-        tray.on("double-click", function () {
-            tray.popUpContextMenu();
-        });
-    }
-    // hide on blur
-    clipboardWindow.on('blur', function (event) {
-        //clipboardWindow.webContents.send('clearHtmlList');
-        hideClipboardWindow();
-    });
+    initSettings();
+    // globalShortcut.register('CmdOrCtrl+Shift+P', () => {
+    //     console.log(storage.getDataPath());
+    // })
+
+
 
 
     // Check for changes at an interval.
     intervalId = setInterval(check_clipboard_for_changes, config.TIMEDELAY);
 
-    globalShortcut.register(KEY_OPEN, () => {
-        showClipboardWindow();
-    })
+
 
 
 }
 
 // show info after install
-function initFirstRun() {
-    storage.get('firstrun', function (error, data) {
-        if (!data) {
-        displayBalloon();
-            storage.set('firstrun', { firstrun: true }, function (error) {
+function initSettings() {
+    storage.get('settings', function (error, obj) {
+        if (error) throw error;
+        if (!isEmpty(obj)) {
+            //first run
+            //displayBalloon();
+            storage.set('settings', config.SETTINGS, function (error) {
             });
+        } else {
+            config.SETTINGS = obj;
         }
-
-
+        loadSettings();
     });
 
 }
-
+function loadSettings() {
+    initClipboardWindow();
+    initTray();
+    globalShortcut.register(config.SETTINGS.shortcut, () => {
+        showClipboardWindow();
+    })
+}
 function check_clipboard_for_changes() {
     let item = electron.clipboard.readText(String);
     if (last_copied_val !== item && item.trim().replace(/\s/g, "") != "") {
@@ -75,24 +76,75 @@ function check_clipboard_for_changes() {
     }
 }
 
+function isEmpty(obj) {
+    return (!obj || (Object.keys(obj).length === 0 && obj.constructor === Object));
+}
+
+function parseSettings(obj) {
+    try {
+        obj.items = parseInt(obj.items);
+        obj.width = parseInt(obj.width);
+        if (!obj.shortcut) {return false;}
+        if (isNaN(obj.items) || obj.items>100) {return false;}
+        if (isNaN(obj.width) || obj.width>1000) {return false;}
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
 
 function showClipboardWindow() {
     let arr = [];
-    storage.get(config.CLIPBOARDKEY, function (error, data) {
+    storage.get(config.CLIPBOARDKEY, function (error, obj) {
         if (error) throw error;
-        if (data && data.fclipboard) {
-            arr = data.fclipboard;
+        if (!isEmpty(obj) && !isEmpty(obj.fclipboard)) {
+            arr = obj.fclipboard;
         }
         clipboardWindow.show();
         clipboardWindow.webContents.focus();
         clipboardWindow.webContents.send('sendclipboard', arr);
     });
 }
+function showSettingsWindow() {
+    let arr = [];
+    storage.get(config.SETTINGSKEY, function (error, obj) {
+        if (error) throw error;
+        if (!isEmpty(obj)) {
+            config.SETTINGS = obj;
+        }
+        if (settingsWindow == null) {
+            initSettingsWindow();
+            settingsWindow.once('ready-to-show', () => {
+                settingsWindow.show();
+                settingsWindow.webContents.focus();
+                settingsWindow.webContents.send('sendsettings', config.SETTINGS, config.OSISMAC);
+            })
+        } else {
+            settingsWindow.show();
+            settingsWindow.webContents.focus();
+            settingsWindow.webContents.send('sendsettings', config.SETTINGS, config.OSISMAC);
+        }
+
+
+    });
+}
+
 ipcMain.on('paste-command', (event, arg) => {
     hideClipboardWindow();
     clipboard.writeText(arg);
     //"command",
-    robot.keyTap("v", ["control"]);
+    let acc;
+    if (config.OSISMAC) acc = ['command']; else acc = ["control"];
+    robot.keyTap("v", acc);
+})
+ipcMain.on('settings-save', (event, obj) => {
+    hideSettingsWindow();
+    if (parseSettings(obj)) {
+        storage.set('settings', obj, function (error) {
+            if (error) throw error;
+            config.SETTINGS = obj;
+        });
+    }
 })
 ipcMain.on('dom-ready-command', (event, height) => {
     //wait for 100ms then show the window.. workaround for flicker effect
@@ -103,7 +155,7 @@ ipcMain.on('dom-ready-command', (event, height) => {
 
         let clipwin_ht = clipboardWindow.getSize()[1];
 
-        clipwin_x = mouse.x + mouseMargin - Math.max(0, mouse.x + mouseMargin + config.WIDTH - screen.width);
+        clipwin_x = mouse.x + mouseMargin - Math.max(0, mouse.x + mouseMargin + config.SETTINGS.width - screen.width);
 
         if (mouse.y - mouseMargin + clipwin_ht <= screen.height - screenMargin)
             clipwin_y = Math.max(mouse.y - mouseMargin, screenMargin);
@@ -116,7 +168,7 @@ ipcMain.on('dom-ready-command', (event, height) => {
         }
 
         clipboardWindow.setPosition(clipwin_x, clipwin_y, false);
-        clipboardWindow.setSize(config.WIDTH, Math.ceil(height), false);
+        clipboardWindow.setSize(config.SETTINGS.width, Math.ceil(height), false);
     }, 100);
 })
 
@@ -125,17 +177,20 @@ function hideClipboardWindow() {
     clipboardWindow.setPosition(screen.height, screen.width, false);
     clipboardWindow.minimize();
 }
+function hideSettingsWindow() {
+    settingsWindow.hide();
+}
 function initClipboardWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
     let maxHeight = screenSize.height - 80;
     clipboardWindow = new BrowserWindow({
-        minWidth: config.WIDTH,
+        minWidth: config.SETTINGS.width,
         webPreferences: {
             backgroundThrottling: false
         },
         useContentSize: true,
         show: false, hasShadow: true, skipTaskbar: true, backgroundColor: "#f5f5f5",
-        resizable: false, maxWidth: config.WIDTH, maxHeight: maxHeight, thickFrame: false, frame: false
+        resizable: false, maxWidth: config.SETTINGS.width, maxHeight: maxHeight, thickFrame: false, frame: false
 
     })
     clipboardWindow.setMenu(null)
@@ -150,16 +205,24 @@ function initClipboardWindow() {
     clipboardWindow.on('closed', () => {
         clipboardWindow = null
     })
+
+    // hide on blur
+    clipboardWindow.on('blur', function (event) {
+        //clipboardWindow.webContents.send('clearHtmlList');
+        hideClipboardWindow();
+    });
 }
 
 function showAboutWindow() {
     if (aboutWindow == null) {
         aboutWindow = new BrowserWindow({
             width: 400, height: 300,
+            title: 'About', center: true,
+            useContentSize: true,
             backgroundThrottling: false, show: false, thickFrame: false,
             hasShadow: true, alwaysOnTop: true,
             resizable: false, maximizable: false, minimizable: false,
-            
+
             frame: true, skipTaskbar: true
         })
         aboutWindow.setMenu(null)
@@ -175,7 +238,29 @@ function showAboutWindow() {
     })
 }
 
+function initSettingsWindow() {
 
+    settingsWindow = new BrowserWindow({
+        width: 472, height: 500,
+        title: 'Settings', center: true,
+        useContentSize: true,
+        webPreferences: {
+            backgroundThrottling: false
+        }, show: false,
+        hasShadow: true, alwaysOnTop: true,
+        //resizable: false, maximizable: false, minimizable: false,thickFrame: false,
+        frame: true, skipTaskbar: true
+    })
+    //settingsWindow.setMenu(null)
+    settingsWindow.loadURL(url.format({
+        pathname: config.SETTINGS_PAGE,
+        protocol: 'file:',
+        slashes: true
+    }))
+    settingsWindow.on('closed', () => {
+        settingsWindow = null
+    })
+}
 
 function clearClipboard() {
     storage.remove(config.CLIPBOARDKEY, function (error) {
@@ -217,10 +302,10 @@ function copyToClipboard(item) {
     let arr = [];
 
     // get arr from system
-    storage.get(config.CLIPBOARDKEY, function (error, data) {
+    storage.get(config.CLIPBOARDKEY, function (error, obj) {
         if (error) throw error;
-        if (data && data.fclipboard) {
-            arr = data.fclipboard;
+        if (!isEmpty(obj) && !isEmpty(obj.fclipboard)) {
+            arr = obj.fclipboard;
         }
 
         //remove duplicate of this item
@@ -273,6 +358,10 @@ function initTray() {
             }
         },
         {
+            label: 'Settings', click: function () {
+                showSettingsWindow();
+            }
+        }, {
             label: 'About', click: function () {
                 showAboutWindow();
             }
@@ -286,9 +375,14 @@ function initTray() {
 
     tray.setToolTip('Flash Clipboard' + (tray_isPause ? ' Status: Paused' : ''))
     tray.setContextMenu(contextMenu)
+    if (tray) {
+        tray.on("double-click", function () {
+            tray.popUpContextMenu();
+        });
+    }
 }
 
-function displayBalloon(){
+function displayBalloon() {
     tray.displayBalloon({ title: 'Flash Clipboard', 'content': 'Access app settings from tray menu.' });
 }
 
@@ -303,7 +397,7 @@ function getTrayIconPath() {
 app.on('ready', function () {
     initMain();
     autoUpdater.checkForUpdates();
-    initFirstRun();
+
 })
 app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
@@ -311,7 +405,7 @@ app.on('activate', () => {
     if (clipboardWindow === null) {
         initMain()
         autoUpdater.checkForUpdates();
-        initFirstRun();
+
     }
 })
 

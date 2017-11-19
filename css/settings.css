@@ -1,0 +1,57 @@
+body{
+    margin:0;
+}
+.settings-form{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: Arial, Helvetica, sans-serif;
+    outline: none;
+    cursor: default;
+    font-size: 1rem;
+    width: 472px;
+    height: auto;
+}
+
+.settings-form .settings-container .settings-cols div{
+    margin: 20px 5px;
+}
+
+.settings-form .settings-container .settings-cols{
+    float: left;
+}
+
+.settings-cols #shortcutkey{
+    width: 20px;
+    /* padding: 0px 5px; */
+    margin: 0 10px;
+    /* height: 15px; */
+}
+
+input[type=number] {
+        width: 47px;
+        padding-left: 10px;
+    }
+input[type=text] {
+    
+    }
+    
+input#autorun {    
+        transform: scale(2);
+    } 
+.settings-form input{
+    text-align:center;
+    outline: none;
+    vertical-align: middle;
+}
+
+.shortcuts input{
+    transform: scale(1.4);
+}
+.settings-cols.rhs{
+    margin-left:20px;
+}
+
+.shortcuts .mac{
+    display:none;
+}

@@ -9,13 +9,13 @@
     <script src="js/renderer.js"></script>
     <!-- Insert this line after script imports -->
     <script>if (window.module) module = window.module;</script>
-    <link rel="stylesheet" type="text/css" href="css/renderer.css">
+    <link rel="stylesheet" type="text/css" href="css/settings.css">
 
-    <form class="settings-form" action="javascript:alert('hi')">
+    <form class="settings-form" action="javascript:settings_save()">
         <fieldset>
-            <legend>Settings</legend>
-            <div class="settinngs-container">
-                <div class="settinngs-cols">
+           
+            <div class="settings-container">
+                <div class="settings-cols lhs">
                     <div>
                         <span>Shortcut to Show clipboard</span>
                     </div>
@@ -27,30 +27,31 @@
                     </div>
                     <div>
                         <span>
-                            <input type="checkbox" name="run" value="">
+                            <input type="checkbox" id="autorun" value="">
                         </span>
                         <span> Run on Startup</span>
                     </div>
                 </div>
-                <div class="settinngs-cols">
+                <div class="settings-cols rhs">
                     <div>
-                        <span>
-                            <input type="checkbox" name="alt" value=""> Alt
-                            <input type="checkbox" name="shift" value=""> Shift
-                            <input type="checkbox" name="ctrl" value=""> Ctrl
+                        <span class='shortcuts'>
+                          <span>  <input type="checkbox" id="alt" value=""> Alt</span>
+                          <span>  <input type="checkbox" id="shift" value=""> Shift</span>
+                          <span class='win'>  <input type="checkbox" id="ctrl" value=""> Ctrl</span>
+                          <span class ='mac'>  <input type="checkbox" id="cmd" value=""> Cmd</span>
                         </span>
                         <span>
-                            <input id="shortcut-key-input" type="text" maxlength=1 name="key" value="">
-                        </span>
-                    </div>
-                    <div>
-                        <span>
-                            <input type="number" name="items" min="5" max="100" step="10" value="">
+                            <input tabindex="1" type="text" maxlength=1 id="shortcutkey" value="">
                         </span>
                     </div>
                     <div>
                         <span>
-                            <input type="number" name="width" min="100" max="1000" step="50" value="">
+                            <input type="number" tabindex="2" id="maxitems" min="10" max="100" step="10" value="">
+                        </span>
+                    </div>
+                    <div>
+                        <span>
+                            <input type="number" tabindex="3" id="maxwidth" min="100" max="1000" step="50" value="">
                         </span>
                     </div>
                 </div>
@@ -60,7 +61,7 @@
             
             <div>
 
-                <input type="submit" value="Submit">
+                <input type="submit" value="Save">
             </div>
         </fieldset>
     </form>
