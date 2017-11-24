@@ -1,5 +1,5 @@
 body{
-    margin:0;
+    /* margin:0; */
 }
 .settings-form{
     overflow: hidden;
@@ -9,7 +9,7 @@ body{
     outline: none;
     cursor: default;
     font-size: 1rem;
-    width: 472px;
+    width: auto;
     height: auto;
 }
 
@@ -24,7 +24,7 @@ body{
 .settings-cols #shortcutkey{
     width: 20px;
     /* padding: 0px 5px; */
-    margin: 0 10px;
+    margin: 0px 15px;
     /* height: 15px; */
 }
 
@@ -54,4 +54,14 @@ input#autorun {
 
 .shortcuts .mac{
     display:none;
+}
+
+#savebtn{
+    font-size: 20px;
+    float: left;
+    margin-top: 30px;
+}
+
+fieldset{
+    border:none;
 }

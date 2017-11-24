@@ -27,9 +27,8 @@ ipc.on('sendclipboard', function (event, clipArr) {
         $('li:first-child').next().focus().addClass("active");
     else $('li:first-child').focus().addClass("active");
 
-    let pageHeight = ($('body').outerHeight(true));
-    let electronWindowHt = (pageHeight);
-    sendToMain('set-size-pos-command', electronWindowHt);
+    let pageHeight = $('body').outerHeight(true);
+    sendToMain('set-size-pos-command', pageHeight);
 });
 
 ipc.on('clearHtmlList', function (event) {
@@ -98,6 +97,8 @@ function setValues(obj, isMAC) {
     keybx.val(srt.substr(-1).toUpperCase());
     itemsbx.val(obj.items);
     widthbx.val(obj.width);
+    let pageHeight = ($('body').outerHeight(true));
+    sendToMain('ready-settings-win',pageHeight);
 }
 
 function settings_save() {

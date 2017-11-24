@@ -105,28 +105,7 @@ function showClipboardWindow() {
         clipboardWindow.webContents.send('sendclipboard', arr);
     });
 }
-function showSettingsWindow() {
-    storage.get(config.SETTINGSKEY, function (error, obj) {
-        if (error) throw error;
-        if (!isEmpty(obj)) {
-            config.SETTINGS = obj;
-        }
-        if (settingsWindow == null) {
-            initSettingsWindow();
-            settingsWindow.once('ready-to-show', () => {
-                settingsWindow.show();
-                settingsWindow.webContents.focus();
-                settingsWindow.webContents.send('sendsettings', config.SETTINGS, config.OSISMAC);
-            })
-        } else {
-            settingsWindow.show();
-            settingsWindow.webContents.focus();
-            settingsWindow.webContents.send('sendsettings', config.SETTINGS, config.OSISMAC);
-        }
 
-
-    });
-}
 
 ipcMain.on('paste-command', (event, arg) => {
     hideClipboardWindow();
@@ -136,24 +115,7 @@ ipcMain.on('paste-command', (event, arg) => {
     if (config.OSISMAC) acc = ['command']; else acc = ["control"];
     robot.keyTap("v", acc);
 })
-ipcMain.on('settings-save', (event, obj) => {
-    hideSettingsWindow();
-    if (parseSettings(obj)) {
-        //Register shortcut
-        registerShortcut(obj.shortcut);
 
-        //Set max items
-        trimItemsList(obj.items);
-
-        //Set Autorun
-        autoStart(obj.autorun);
-        
-        storage.set('settings', obj, function (error) {
-            if (error) throw error;
-            config.SETTINGS = obj;
-        });
-    }
-})
 
 //Set size and position of clipboard window
 ipcMain.on('set-size-pos-command', (event, height) => {
@@ -247,29 +209,7 @@ function showAboutWindow() {
     })
 }
 
-function initSettingsWindow() {
 
-    settingsWindow = new BrowserWindow({
-        width: 472, height: 500,
-        title: 'Settings', center: true,
-        useContentSize: true,
-        webPreferences: {
-            backgroundThrottling: false
-        }, show: false,
-        hasShadow: true, alwaysOnTop: true,
-        //resizable: false, maximizable: false, minimizable: false,thickFrame: false,
-        frame: true, skipTaskbar: true
-    })
-    //settingsWindow.setMenu(null)
-    settingsWindow.loadURL(url.format({
-        pathname: config.SETTINGS_PAGE,
-        protocol: 'file:',
-        slashes: true
-    }))
-    settingsWindow.on('closed', () => {
-        settingsWindow = null
-    })
-}
 
 function clearClipboard() {
     storage.remove(config.CLIPBOARDKEY, function (error) {
@@ -466,6 +406,75 @@ function trimItemsList(maxItems) {
         }
     });
 }
+
+function initSettingsWindow() {
+    
+        settingsWindow = new BrowserWindow({
+            width: 500,
+            title: 'Settings', center: true,
+            useContentSize: true,
+            webPreferences: {
+                backgroundThrottling: false
+            }, show: false,
+            hasShadow: true, alwaysOnTop: true,
+            resizable: false, maximizable: false, minimizable: false,thickFrame: false,
+            frame: true, skipTaskbar: true
+        })
+        settingsWindow.setMenu(null)
+        settingsWindow.loadURL(url.format({
+            pathname: config.SETTINGS_PAGE,
+            protocol: 'file:',
+            slashes: true
+        }))
+        settingsWindow.on('closed', () => {
+            settingsWindow = null
+        })
+    }
+
+function showSettingsWindow() {
+    storage.get(config.SETTINGSKEY, function (error, obj) {
+        if (error) throw error;
+        if (!isEmpty(obj)) {
+            config.SETTINGS = obj;
+        }
+        if (settingsWindow == null) {
+            initSettingsWindow();
+            settingsWindow.once('ready-to-show', () => {
+                settingsWindow.webContents.focus();
+                settingsWindow.webContents.send('sendsettings', config.SETTINGS, config.OSISMAC);
+            })
+        } else {
+            settingsWindow.webContents.focus();
+            settingsWindow.webContents.send('sendsettings', config.SETTINGS, config.OSISMAC);
+        }
+
+
+    });
+}
+
+ipcMain.on('ready-settings-win', (event, obj) => {
+    settingsWindow.setSize(500,Math.ceil(obj)+30,false);
+    settingsWindow.show();
+})
+
+ipcMain.on('settings-save', (event, obj) => {
+    hideSettingsWindow();
+    if (parseSettings(obj)) {
+        //Register shortcut
+        registerShortcut(obj.shortcut);
+
+        //Set max items
+        trimItemsList(obj.items);
+
+        //Set Autorun
+        autoStart(obj.autorun);
+
+        storage.set('settings', obj, function (error) {
+            if (error) throw error;
+            config.SETTINGS = obj;
+        });
+    }
+})
 //############################# APP UPDATE #############################//
 // if (isDev) {
 //     autoUpdater.updateConfigPath = path.join(__dirname, 'app-update.yml');
