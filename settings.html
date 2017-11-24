@@ -11,7 +11,7 @@
     <script>if (window.module) module = window.module;</script>
     <link rel="stylesheet" type="text/css" href="css/settings.css">
 
-    <form class="settings-form" action="javascript:settings_save()">
+    <form class="settings-form" action="">
         <fieldset>
            
             <div class="settings-container">
@@ -23,7 +23,7 @@
                         <span>Store max items </span>
                     </div>
                     <div>
-                        <span>Max popup width</span>
+                        <span>Popup width</span>
                     </div>
                     <div>
                         <span>
@@ -61,7 +61,7 @@
             
             <div>
 
-                <input type="submit" value="Save">
+                <input type="button" onclick="settings_save()" value="Save">
             </div>
         </fieldset>
     </form>

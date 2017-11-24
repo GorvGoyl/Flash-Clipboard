@@ -53,6 +53,7 @@ function initSettings() {
             //first run
             //displayBalloon();
             storage.set('settings', config.SETTINGS, function (error) {
+                if (error) throw error;
             });
         } else {
             config.SETTINGS = obj;
@@ -64,9 +65,8 @@ function initSettings() {
 function loadSettings() {
     initClipboardWindow();
     initTray();
-    globalShortcut.register(config.SETTINGS.shortcut, () => {
-        showClipboardWindow();
-    })
+    registerShortcut(config.SETTINGS.shortcut);
+    autoStart(config.SETTINGS.autorun);
 }
 function check_clipboard_for_changes() {
     let item = electron.clipboard.readText(String);
@@ -84,9 +84,9 @@ function parseSettings(obj) {
     try {
         obj.items = parseInt(obj.items);
         obj.width = parseInt(obj.width);
-        if (!obj.shortcut) {return false;}
-        if (isNaN(obj.items) || obj.items>100) {return false;}
-        if (isNaN(obj.width) || obj.width>1000) {return false;}
+        if (!(obj.shortcut.substr(-2,1)==='+')) { return false; }
+        if (isNaN(obj.items) || obj.items > 100) { return false; }
+        if (isNaN(obj.width) || obj.width > 1000) { return false; }
     } catch (e) {
         return false;
     }
@@ -106,7 +106,6 @@ function showClipboardWindow() {
     });
 }
 function showSettingsWindow() {
-    let arr = [];
     storage.get(config.SETTINGSKEY, function (error, obj) {
         if (error) throw error;
         if (!isEmpty(obj)) {
@@ -140,13 +139,24 @@ ipcMain.on('paste-command', (event, arg) => {
 ipcMain.on('settings-save', (event, obj) => {
     hideSettingsWindow();
     if (parseSettings(obj)) {
+        //Register shortcut
+        registerShortcut(obj.shortcut);
+
+        //Set max items
+        trimItemsList(obj.items);
+
+        //Set Autorun
+        autoStart(obj.autorun);
+        
         storage.set('settings', obj, function (error) {
             if (error) throw error;
             config.SETTINGS = obj;
         });
     }
 })
-ipcMain.on('dom-ready-command', (event, height) => {
+
+//Set size and position of clipboard window
+ipcMain.on('set-size-pos-command', (event, height) => {
     //wait for 100ms then show the window.. workaround for flicker effect
     setTimeout(function () {
         let mouse = electron.screen.getCursorScreenPoint();
@@ -184,13 +194,12 @@ function initClipboardWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
     let maxHeight = screenSize.height - 80;
     clipboardWindow = new BrowserWindow({
-        minWidth: config.SETTINGS.width,
         webPreferences: {
             backgroundThrottling: false
         },
         useContentSize: true,
         show: false, hasShadow: true, skipTaskbar: true, backgroundColor: "#f5f5f5",
-        resizable: false, maxWidth: config.SETTINGS.width, maxHeight: maxHeight, thickFrame: false, frame: false
+        resizable: false, width: config.SETTINGS.width, maxHeight: maxHeight, thickFrame: false, frame: false
 
     })
     clipboardWindow.setMenu(null)
@@ -313,7 +322,7 @@ function copyToClipboard(item) {
 
         // push new item to first position and maintain max arr size to x
         arr.unshift(item);
-        while (arr.length > 50) {
+        while (arr.length > config.SETTINGS.items) {
             arr.pop();
         }
 
@@ -419,14 +428,44 @@ app.on('window-all-closed', () => {
 })
 
 
+//############################# SETTINGS #############################//
 
+function autoStart(val){
+    app.setLoginItemSettings({
+        openAtLogin: val,
+        path: process.execPaths
+    })
+}
+function registerShortcut(shortcut){
+    globalShortcut.unregisterAll();
+    globalShortcut.register(shortcut, () => {
+        showClipboardWindow();
+    })
 
+}
+function trimItemsList(maxItems) {
+    let arr = [];
 
-app.setLoginItemSettings({
-    openAtLogin: true,
-    path: process.execPaths
-})
-
+    // get arr from system
+    storage.get(config.CLIPBOARDKEY, function (error, obj) {
+        if (error) throw error;
+        if (!isEmpty(obj) && !isEmpty(obj.fclipboard)) {
+            arr = obj.fclipboard;
+            if (arr.length > maxItems) {
+                while (arr.length > maxItems) {
+                    arr.pop();
+                }
+                // store the arr back to system
+                storage.set(config.CLIPBOARDKEY, { fclipboard: arr }, function (error) {
+                    if (error) throw error;
+                    if (isDisabled_btnClearClipboard) {
+                        btnClearClipboard("enable");
+                    }
+                });
+            }
+        }
+    });
+}
 //############################# APP UPDATE #############################//
 // if (isDev) {
 //     autoUpdater.updateConfigPath = path.join(__dirname, 'app-update.yml');

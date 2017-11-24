@@ -1,5 +1,5 @@
 'use strict'
-let MAX_ITEMS, MAX_WIDTH;
+let MAX_ITEMS=100, MAX_WIDTH=1000;
 let alt, ctrl, shift, cmd,cmdctrl;
 let altck, ctrlck, shiftck, cmdck, autorunck;
 let keybx, itemsbx, widthbx;
@@ -29,7 +29,7 @@ ipc.on('sendclipboard', function (event, clipArr) {
 
     let pageHeight = ($('body').outerHeight(true));
     let electronWindowHt = (pageHeight);
-    sendToMain('dom-ready-command', electronWindowHt);
+    sendToMain('set-size-pos-command', electronWindowHt);
 });
 
 ipc.on('clearHtmlList', function (event) {
@@ -73,7 +73,7 @@ function clearHtmlList() {
 }
 
 function allowedKey(key) {
-    //back,null,tab,arrow
+    //back,null,tab,arrows
     var allowedkeys = [0, 8, 9, 37, 38, 39, 40];
     return allowedkeys.includes(key);
 }
@@ -83,7 +83,6 @@ function setValues(obj, isMAC) {
     altck = $('#alt'), ctrlck = $('#ctrl'), shiftck = $('#shift'), cmdck = $('#cmd'), autorunck = $('#autorun');
     keybx = $('#shortcutkey'), itemsbx = $('#maxitems'), widthbx = $('#maxwidth');
     let srt = obj.shortcut;
-    MAX_WIDTH = obj.width, MAX_ITEMS = obj.items;
 
     if (isMAC) {
         $('#mac').show();
@@ -97,8 +96,8 @@ function setValues(obj, isMAC) {
     if (srt.includes(shift)) { shiftck.prop('checked', true); }
     if (obj.autorun) { autorunck.prop('checked', true); }
     keybx.val(srt.substr(-1).toUpperCase());
-    itemsbx.val(MAX_ITEMS);
-    widthbx.val(MAX_WIDTH);
+    itemsbx.val(obj.items);
+    widthbx.val(obj.width);
 }
 
 function settings_save() {
@@ -143,7 +142,7 @@ $(document).ready(function () {
     /*-CLIPBOARD_PAGE END*/
 
     /*SETTINGS_PAGE*/
-
+    // allow only numbers in number field
     $(':input[type="number"]').on("keydown keyup", function (evt) {
         if (!allowedKey(evt.which) && evt.which < 48 || evt.which > 57) {
             evt.preventDefault();
@@ -163,6 +162,12 @@ $(document).ready(function () {
             $(this).val(MAX_WIDTH);
         }
     });
-
+    $('#shortcutkey').on("keypress", function (evt) {
+        if (!allowedKey(evt.which)){
+            evt.preventDefault();
+            keybx.val(String.fromCharCode(evt.which).toUpperCase());
+        }
+        
+    });
     /*-SETTINGS_PAGE END*/
 });
