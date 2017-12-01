@@ -1,0 +1,43 @@
+
+@font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Oxygen Regular'), local('Oxygen-Regular'), url('../fonts/IIPDrwV5KNJo5-LaFlLy2fesZW2xOQ-xsNqO47m55DA.woff2') format('woff2');
+    unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+  }
+  /* latin */
+  @font-face {
+    font-family: 'Oxygen';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Oxygen Regular'), local('Oxygen-Regular'), url('../fonts/78wGxsHfFBzG7bRkpfRnCQ.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+  }
+  body{
+    /* font-family: Arial, Helvetica, sans-serif; */
+    font-family: 'Oxygen', sans-serif;
+    outline: none;
+    cursor: default;
+    text-align: center;
+/*disable selection*/
+    user-select: none;
+}
+
+h1{
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+}
+img {
+    max-width: 30%;
+    height: auto;
+}
+
+#version-div{
+  color:gray;
+}
+
+
+#version{
+  font-weight: bold;
+}

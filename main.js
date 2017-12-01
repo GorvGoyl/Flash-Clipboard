@@ -34,15 +34,8 @@ function initMain() {
     //     console.log(storage.getDataPath());
     // })
 
-
-
-
     // Check for changes at an interval.
     intervalId = setInterval(check_clipboard_for_changes, config.TIMEDELAY);
-
-
-
-
 }
 
 // show info after install
@@ -93,20 +86,6 @@ function parseSettings(obj) {
     return true;
 }
 
-function showClipboardWindow() {
-    let arr = [];
-    storage.get(config.CLIPBOARDKEY, function (error, obj) {
-        if (error) throw error;
-        if (!isEmpty(obj) && !isEmpty(obj.fclipboard)) {
-            arr = obj.fclipboard;
-        }
-        clipboardWindow.show();
-        clipboardWindow.webContents.focus();
-        clipboardWindow.webContents.send('sendclipboard', arr);
-    });
-}
-
-
 ipcMain.on('paste-command', (event, arg) => {
     hideClipboardWindow();
     clipboard.writeText(arg);
@@ -116,34 +95,50 @@ ipcMain.on('paste-command', (event, arg) => {
     robot.keyTap("v", acc);
 })
 
+function showClipboardWindow() {
+    let arr = [];
+    storage.get(config.CLIPBOARDKEY, function (error, obj) {
+        if (error) throw error;
+        if (!isEmpty(obj) && !isEmpty(obj.fclipboard)) {
+            arr = obj.fclipboard;
+        }
+        clipboardWindow.webContents.send('sendclipboard', arr);
+    });
+}
 
 //Set size and position of clipboard window
 ipcMain.on('set-size-pos-command', (event, height) => {
     //wait for 100ms then show the window.. workaround for flicker effect
     setTimeout(function () {
-        let mouse = electron.screen.getCursorScreenPoint();
-        let clipwin_y, clipwin_x;
-        let screen = electron.screen.getPrimaryDisplay().size;
-
-        let clipwin_ht = clipboardWindow.getSize()[1];
-
-        clipwin_x = mouse.x + mouseMargin - Math.max(0, mouse.x + mouseMargin + config.SETTINGS.width - screen.width);
-
-        if (mouse.y - mouseMargin + clipwin_ht <= screen.height - screenMargin)
-            clipwin_y = Math.max(mouse.y - mouseMargin, screenMargin);
-        else {
-            // clip window is partially out of screen so move the window up
-            let diff_ht = mouse.y + mouseMargin + clipwin_ht - (screen.height - screenMargin);
-
-            clipwin_y = mouse.y + mouseMargin - diff_ht;
-            clipwin_y = Math.max(screenMargin, clipwin_y);
-        }
-
-        clipboardWindow.setPosition(clipwin_x, clipwin_y, false);
-        clipboardWindow.setSize(config.SETTINGS.width, Math.ceil(height), false);
+    setSizePos(height);
     }, 100);
 })
+function setSizePos(height){
+    clipboardWindow.show();
+    let screen = electron.screen.getPrimaryDisplay().size;
+    clipboardWindow.setPosition(screen.height, screen.width, false);
+    clipboardWindow.setSize(config.SETTINGS.width, Math.ceil(height), false);
+    let mouse = electron.screen.getCursorScreenPoint();
+    let clipwin_y, clipwin_x;
+   
 
+    let clipwin_ht = clipboardWindow.getSize()[1];
+
+    clipwin_x = mouse.x + mouseMargin - Math.max(0, mouse.x + mouseMargin + config.SETTINGS.width - screen.width);
+
+    if (mouse.y - mouseMargin + clipwin_ht <= screen.height - screenMargin)
+        clipwin_y = Math.max(mouse.y - mouseMargin, screenMargin);
+    else {
+        // clip window is partially out of screen so move the window up
+        let diff_ht = mouse.y + mouseMargin + clipwin_ht - (screen.height - screenMargin);
+
+        clipwin_y = mouse.y + mouseMargin - diff_ht;
+        clipwin_y = Math.max(screenMargin, clipwin_y);
+    }
+    
+    clipboardWindow.setPosition(clipwin_x, clipwin_y, false);
+    
+}
 function hideClipboardWindow() {
     let screen = electron.screen.getPrimaryDisplay().size
     clipboardWindow.setPosition(screen.height, screen.width, false);
@@ -155,6 +150,7 @@ function hideSettingsWindow() {
 function initClipboardWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
     let maxHeight = screenSize.height - 80;
+    clipboardWindow=null;
     clipboardWindow = new BrowserWindow({
         webPreferences: {
             backgroundThrottling: false
@@ -184,31 +180,42 @@ function initClipboardWindow() {
     });
 }
 
-function showAboutWindow() {
-    if (aboutWindow == null) {
-        aboutWindow = new BrowserWindow({
-            width: 400, height: 300,
-            title: 'About', center: true,
-            useContentSize: true,
-            backgroundThrottling: false, show: false, thickFrame: false,
-            hasShadow: true, alwaysOnTop: true,
-            resizable: false, maximizable: false, minimizable: false,
-
-            frame: true, skipTaskbar: true
-        })
-        aboutWindow.setMenu(null)
-        aboutWindow.loadURL(url.format({
-            pathname: config.ABOUT_PAGE,
-            protocol: 'file:',
-            slashes: true
-        }))
-    }
-    aboutWindow.show();
+function initAboutWindow(){
+    aboutWindow = new BrowserWindow({
+        width: 400, height: 300,
+        title: 'Flash Clipboard - About', center: true,
+        useContentSize: true,
+        backgroundThrottling: false, show: false, thickFrame: true,
+        hasShadow: true, 
+        resizable: false, maximizable: false, minimizable: false,alwaysOnTop: true,skipTaskbar: true,
+        frame: true
+    })
+    aboutWindow.setMenu(null)
+    aboutWindow.loadURL(url.format({
+        pathname: config.ABOUT_PAGE,
+        protocol: 'file:',
+        slashes: true
+    }))
     aboutWindow.on('closed', () => {
         aboutWindow = null
     })
 }
 
+function showAboutWindow() {
+    if (aboutWindow == null) {
+        initAboutWindow();
+        aboutWindow.webContents.on('did-finish-load', () => {
+            aboutWindow.webContents.send('appversion', app.getVersion());
+            aboutWindow.show();
+              })
+    }else{
+        aboutWindow.show();
+    }
+}
+
+// ipcMain.on('show-about', (event, arg) => {
+//     aboutWindow.show();
+// })
 
 
 function clearClipboard() {
@@ -410,14 +417,14 @@ function trimItemsList(maxItems) {
 function initSettingsWindow() {
     
         settingsWindow = new BrowserWindow({
-            width: 500,
-            title: 'Settings', center: true,
+            width: 500,height:300,
+            title: 'Flash Clipboard - Settings', center: true,
             useContentSize: true,
             webPreferences: {
                 backgroundThrottling: false
             }, show: false,
             hasShadow: true, alwaysOnTop: true,
-            resizable: false, maximizable: false, minimizable: false,thickFrame: false,
+            resizable: false, maximizable: false, minimizable: false,thickFrame: true,
             frame: true, skipTaskbar: true
         })
         settingsWindow.setMenu(null)

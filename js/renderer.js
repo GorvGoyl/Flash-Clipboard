@@ -9,6 +9,13 @@ ELECTRON
 */
 const { ipcRenderer } = require('electron')
 let ipc = require('electron').ipcRenderer;
+let shell = require('electron').shell
+document.addEventListener('click', function (event) {
+  if (event.target.tagName === 'A' && event.target.href.startsWith('http')) {
+    event.preventDefault()
+    shell.openExternal(event.target.href)
+  }
+})
 
 ipc.on('sendclipboard', function (event, clipArr) {
     clearHtmlList();
@@ -30,7 +37,11 @@ ipc.on('sendclipboard', function (event, clipArr) {
     let pageHeight = $('body').outerHeight(true);
     sendToMain('set-size-pos-command', pageHeight);
 });
-
+ipc.on('appversion', function (event, vers) {
+    let el = document.getElementById("version");
+    el.innerHTML=vers;
+    sendToMain('show-about', '');
+});
 ipc.on('clearHtmlList', function (event) {
     clearHtmlList();
 });
