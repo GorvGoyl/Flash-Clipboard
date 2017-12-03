@@ -40,7 +40,8 @@ ipc.on('sendclipboard', function (event, clipArr) {
 ipc.on('appversion', function (event, vers) {
     let el = document.getElementById("version");
     el.innerHTML=vers;
-    sendToMain('show-about', '');
+    let pageHeight = $('body').outerHeight(true);
+    sendToMain('show-about', pageHeight);
 });
 ipc.on('clearHtmlList', function (event) {
     clearHtmlList();

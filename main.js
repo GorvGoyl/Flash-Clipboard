@@ -182,7 +182,7 @@ function initClipboardWindow() {
 
 function initAboutWindow(){
     aboutWindow = new BrowserWindow({
-        width: 400, height: 300,
+        width: 400,
         title: 'Flash Clipboard - About', center: true,
         useContentSize: true,
         backgroundThrottling: false, show: false, thickFrame: true,
@@ -206,16 +206,16 @@ function showAboutWindow() {
         initAboutWindow();
         aboutWindow.webContents.on('did-finish-load', () => {
             aboutWindow.webContents.send('appversion', app.getVersion());
-            aboutWindow.show();
               })
     }else{
-        aboutWindow.show();
+        aboutWindow.webContents.send('appversion', app.getVersion());
     }
 }
 
-// ipcMain.on('show-about', (event, arg) => {
-//     aboutWindow.show();
-// })
+ipcMain.on('show-about', (event, height) => {
+    aboutWindow.setSize(400, Math.ceil(height)+40, false);
+    aboutWindow.show();
+})
 
 
 function clearClipboard() {

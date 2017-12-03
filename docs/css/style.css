@@ -1,8 +1,10 @@
 * {
     box-sizing: border-box;
 }
-body {margin:0;
- font: normal 10px Verdana, Arial, sans-serif;
+body {
+  margin:0;
+  font-family: 'Oxygen', sans-serif;
+  /* font: normal 10px Verdana, Arial, sans-serif; */
 }
 .col-1 {width: 8.33%;}
 .col-2 {width: 16.66%;}
@@ -45,17 +47,29 @@ body {margin:0;
 }
 
 img {
-    max-width: 30%;
-    height: auto;
+    /* max-width: 30%; */
+    /* height: auto; */
 }
 .row{
   height: auto;
   padding: 10px;
 }
 .row.downloaddiv{
-      background-color: #3c5e8e;
+      background-color: #005ec8;
+      background-image: -webkit-gradient(linear,left bottom,right top,color-stop(0%,#0f8afc80),color-stop(100%,#005ec8f5));
+      background-image: -webkit-linear-gradient(45deg,#0f8afc80 0,#005ec8f5 100%);
+      background-image: -moz-linear-gradient(45deg,#0f8afc80 0,#005ec8f5 100%);
+      background-image: -ms-linear-gradient(45deg,#0f8afc80 0,#005ec8f5 100%);
+      background-image: -o-linear-gradient(45deg,#0f8afc80 0,#005ec8f5 100%);
+      background-image: linear-gradient(45deg,#0f8afc80 0,#005ec8f5 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0f8afc80', endColorstr='#005ec8f5', GradientType=1);
 }
-
+.home{
+      font-weight: bold;
+      font-size: 20px !important;
+      letter-spacing: 1px;
+      line-height: 21px;
+}
 h1 {
   font-size: 6.0vmin;
   text-align: center;
@@ -83,15 +97,16 @@ a:link, a:visited {
 
 .topnav {
   overflow: hidden;
-  background-color: #333;
+  background-color: #005ec8;
   position: fixed;
   width: 100%;
   top: 0;
+  border-bottom: solid 1px #10ade9d9;
 }
 
 .topnav a {
   display: block;
-  color: #f2f2f2;
+  color: #ffffff;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
@@ -99,12 +114,12 @@ a:link, a:visited {
 }
 
 .topnav a:hover {
-  background-color: #ddd;
-  color: black;
+  background-color: #fff;
+  color: #005ec8;
 }
 
 .active {
-  background-color: #fe9a1e;
+  background-color: #005ec8;
   color: white;
 }
 
@@ -149,23 +164,28 @@ a:link, a:visited {
    .downloads .download {
     display: inline-block;
     text-align: center;
-    background-color: #10ade9;
+    background-color: #fea92e;
+    opacity: 0.9;
     margin: 15px;
     padding: 20px 24px;
     border: none;
     cursor: pointer;
     color: #fff;
     width: 160px;
-    height: 130px;
+    /* height: 111px; */
     font-size: 18px;
     -webkit-transition-duration: 0.2s; /* Safari */
     transition-duration: 0.2s;
     box-shadow: 0 3px 7px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
+.mainimg{
+  width: 240px;
+}
 .downloads .download:hover {
     text-decoration: none;
-    background-color: #0f8afc;
+    background-color: #fe9a1e;
+    opacity: 1;
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
 }
 /*BUTTON-END*/

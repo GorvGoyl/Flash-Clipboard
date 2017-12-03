@@ -1,9 +1,6 @@
-$( document ).ready(function() {
-    console.log( "ready!" );
-});
+
 
 function toggleNav() {
-    var navEl = document.getElementById("myTopnav");
     var navEl = document.getElementById("myTopnav");
     var dwEl = $('.downloaddiv');
     if (navEl.className === "topnav") {
