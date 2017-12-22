@@ -7,6 +7,6 @@ To paste a text in a textbox, hit CTRL+SHIFT+V to open Flash Clipboard and selec
 
 ---
 
-*Thanks to the support of BrowserStack for providing its cross-browser testing services to the project!*
+*Thanks to the support of [BrowserStack](https://browserstack.com/) for providing its cross-browser testing services to the project!*
 
-[![browserstack-logo-600x315](https://user-images.githubusercontent.com/7106086/34295981-32433d32-e736-11e7-88c6-b9678773f8f8.png)](http://browserstack.com/)
+[![browserstack-logo-600x315_2](https://user-images.githubusercontent.com/7106086/34296258-c83557fc-e737-11e7-9de3-1762951bec40.png)](https://browserstack.com/)
