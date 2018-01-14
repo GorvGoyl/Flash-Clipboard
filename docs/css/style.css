@@ -1,3 +1,4 @@
+/* COMMON */
 * {
     box-sizing: border-box;
 }
@@ -46,10 +47,6 @@ body {
     display: table;
 }
 
-img {
-    /* max-width: 30%; */
-    /* height: auto; */
-}
 .row{
   height: auto;
   padding: 10px;
@@ -71,18 +68,16 @@ img {
       line-height: 21px;
 }
 h1 {
-  font-size: 6.0vmin;
+  
   text-align: center;
   color: #fff;
 
 }
-h2 {
-  font-size: 4.0vmin;
+h2,h3 {
   text-align: center;
   color: #fff;
 }
-p {
-}
+
 .downloads{
       text-align: center;
 }
@@ -92,10 +87,10 @@ a:link, a:visited {
     text-decoration: none;
 }
 
-/*NAVBAR*/
-
+/* NAVBAR */
 
 .topnav {
+  z-index: 100;
   overflow: hidden;
   background-color: #005ec8;
   position: fixed;
@@ -158,17 +153,19 @@ a:link, a:visited {
 }
 
 .topmargin{margin-top: 48px;}
-/*NAVBAR-END*/
 
-/*BUTTON*/
+/* DOWNLOAD BUTTONS */
+
    .downloads .download {
     display: inline-block;
     text-align: center;
-    background-color: #fea92e;
+    vertical-align: top;
+    background-color: #00171F;
     opacity: 0.9;
     margin: 15px;
     padding: 20px 24px;
-    border: none;
+    border-radius: 10px 10px 10px 10px;
+    border: 1px solid #00171F;
     cursor: pointer;
     color: #fff;
     width: 160px;
@@ -180,12 +177,76 @@ a:link, a:visited {
 }
 
 .mainimg{
-  width: 240px;
+  max-width: 240px;
 }
 .downloads .download:hover {
     text-decoration: none;
-    background-color: #fe9a1e;
+    border: 1px solid #ff4b00;
     opacity: 1;
+   
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
 }
-/*BUTTON-END*/
+
+/* GETTING STARTED */
+
+.row.started {
+    background-color: #004385;
+    text-align: center;
+    vertical-align: top;
+}
+
+img.sshots_img {
+    height: auto;
+    max-width: 381px;
+    width: 85%;
+-webkit-box-shadow: 0px 0px 14px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: 0px 0px 14px 0px rgba(0,0,0,0.75);
+box-shadow: 0px 0px 14px 0px rgba(0,0,0,0.75);
+}
+.sshots_spn{
+margin: 15px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.sshots_p{
+      max-width: 320px;
+    text-align: center;
+    color:white;
+    margin: inherit;
+    font-size: 20px;
+}
+
+/* SEE ACTION */
+.row.see_action {
+    /* background-color: #6DAEDB; */
+    background-color: #056cd8;
+    text-align: center;
+    vertical-align: top;
+}
+/* FEATURES */
+.row.features {
+  /* background-color: #1B4353; */
+  background-color: #004385;
+  text-align: center;
+  vertical-align: top;
+}
+.features_ul li{
+  color:white;
+  font-size: 20px;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.features_div{
+  display: inline-flex;
+  margin: 15px;
+}
+
+/* FREE DOWNLOAD */
+.row.freedownload {
+  background-color: #056cd8;
+  text-align: center;
+  vertical-align: top;
+}
+/* FOOTER */

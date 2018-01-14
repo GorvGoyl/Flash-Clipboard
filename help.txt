@@ -1,27 +1,41 @@
-// How to setup project
-- install latest nodejs from official site
-- check node and npm --version in cmd
-    node: 8.7.0, npm: 5.4.2
-- install electron either globally or local to project (my electron version: 1.7.9)
-    for globally: npm install electron -g
-    for locally (run in vscode terminal after opening project): npm install electron --save-dev --save-exact
-- clone repo from github https://github.com/JerryGoyal/Flash-Clipboard
-- open with vscode
+// SETUP PROJECT & ENV //
+    
+// install nodejs ( + npm) (LTS) //restart vscode
+    choco install nodejs-lts
 
-// How to build
-- run: npm install (it'll give robotjs issues which can be resolved in next step)
-- to fix robotjs issues: follow below instructions or see https://stackoverflow.com/questions/11178372/is-it-possible-to-simulate-keyboard-mouse-event-in-nodejs/46897783#46897783
-    run: npm install --global windows-build-tools
-    run: npm install robotjs --save-dev (for me, it added 0.4.7 version)
-    run: npm rebuild --runtime=electron --target=1.7.9 --disturl=https://atom.io/download/atom-shell --abi=57
-    (1.7.9 is my electron --version and abi 57 is for my corresponding node --version 8.7)
+// upgrade NODE.js (+ npm)
+    choco upgrade nodejs
 
-// How to Run
-- run: electron ./main.js
-    (if couldn't run then try build steps one more time and then run)
+// check versions: 
+node --version  //8.9.4
+npm --v in cmd //5.6.0
+electron --version //1.7.10
 
-// How to publish
-By default, electron-updater will try to detect the GitHub settings (such as the repo name and owner) from reading the .git/config
+//    for globally:
+npm install electron -g
+choco install electron
+choco upgrade electron
+//- clone repo from github https://github.com/JerryGoyal/Flash-Clipboard
+//- open with vscode
+
+// HOW TO BUILD //
+// - run: npm install
+
+
+// HOW TO RUN //
+electron ./main.js
+
+// - if it gave robotjs issues: follow below instructions or see https://stackoverflow.com/questions/11178372/is-it-possible-to-simulate-keyboard-mouse-event-in-nodejs/46897783#46897783
+    npm install --global windows-build-tools
+    npm install robotjs --save-dev
+    //(for me, it added 0.4.7 version)
+    npm rebuild --runtime=electron --target=1.7.10 --disturl=https://atom.io/download/atom-shell --abi=57
+    //(yarn install --force )
+    // (here 1.7.10 is my electron version and abi 57 is for my corresponding node version 8.9.4)
+    // (if couldn't run then try build steps one more time and then run)
+
+// HOW TO PUBLISH //
+//By default, electron-updater will try to detect the GitHub settings (such as the repo name and owner) from reading the .git/config
 Optional:
  {
      ...
@@ -71,22 +85,35 @@ Optional:
   }
 
 
-  // Handy NPM commands
+  // HANDY COMMANDS //
 
-- update all packages to latest version in package.json
- npm update --save
-- lists all installed packages:
-npm list
-- rebuild all node_modules
- npm install & npm rebuild
-- removes packages not depended on by your project according to your package.json:
+// install choco for windows (run in admin cmd not powershell)
+@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+
+// update choco
+choco upgrade chocolatey
+
+// rebuild all node_modules
+npm install
+npm rebuild
+
+// outdated npm modules
+npm outdated
+
+// update all packages to latest version in package.json
+ npm update --save/--save-dev
+ yarn upgrade-interactive --latest
+
+// removes packages not depended on by your project according to your package.json:
 npm prune
 
-- tells you which installed packages are outdated with respect to what is current in the npm registry but allowable by the version definition in your package.json:
-npm outdated (-g)
+// unistall node module
+npm -g uninstall my_module --save
+npm rm my_module
+yarn remove my_module
 
-- Update all packages listed in package.json:
-npm update
-
-- Clean npm cache:
+// Clean npm cache (never required though):
 npm cache clean -f
+
+// lists all installed packages:
+npm list
