@@ -28,11 +28,15 @@ ipc.on('sendclipboard', function (event, clipArr) {
         li.appendChild(document.createTextNode(clipArr[i]));
         ul.appendChild(li);
     }
-
     // default focus on 2nd element
     if (clipArr.length > 1)
         $('li:first-child').next().focus().addClass("active");
-    else $('li:first-child').focus().addClass("active");
+    else if(clipArr.length==1) $('li:first-child').focus().addClass("active");
+    else{
+        let spn = $('<span />').html("copy some text and that'll appear here")
+        ul.append("copy some text and that'll appear here :-)");
+        $(ul).addClass('nocontent');
+    }
 
     let pageHeight = $('body').outerHeight(true);
     sendToMain('set-size-pos-command', pageHeight);
@@ -80,6 +84,7 @@ function pasteValue(item) {
 }
 
 function clearHtmlList() {
+    $('#clipboard-ul').removeClass('nocontent');
     $('#clipboard-ul').empty();
 }
 

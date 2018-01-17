@@ -18,7 +18,7 @@ module.exports = {
     SETTINGS: {
         shortcut:'CmdOrCtrl+Shift+O',
         items:25,
-        width:250,
+        width:280,
         autorun:true
     }
 
