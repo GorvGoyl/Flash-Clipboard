@@ -16,7 +16,7 @@ module.exports = {
     TRAY_PAUSE_CAPTURE_LABEL: "Pause capturing text",
     TRAY_RESUME_CAPTURE_LABEL: "Resume capturing text",
     SETTINGS: {
-        shortcut:'CmdOrCtrl+Shift+O',
+        shortcut:'CmdOrCtrl+Shift+V',
         items:25,
         width:280,
         autorun:true
