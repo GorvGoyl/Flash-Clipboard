@@ -1,41 +1,55 @@
-// SETUP PROJECT & ENV //
-    
-// install nodejs ( + npm) (LTS) //restart vscode
-    choco install nodejs-lts
+## INSTALL
+    // install choco for windows (run in admin cmd not powershell)
+        @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+    - choco install nodejs-lts ( + npm) (LTS) //restart vscode
+    // if robotjs issue then temp remove from package.json: "robotjs": "^X.x.x"
+    - npm install electron --save-dev (recommended)
+    - npm install electron -g (globally)
 
-// upgrade NODE.js (+ npm)
-    choco upgrade nodejs
+## UPGRADE
+    - choco upgrade nodejs (+ npm)
+    - choco upgrade chocolatey
+    - choco upgrade electron
+    - yarn upgrade-interactive --latest
+    // update all packages to latest version in package.json
+        - npm update --save
+        - npm update --save-dev
 
-// check versions: 
-node --version  //8.9.4
-npm --v in cmd //5.6.0
-electron --version //1.7.10
+## CHECK VERSION
+    - node --version  //8.9.4
+    - npm --v in cmd //5.6.0
+    - electron --version //1.7.10
 
-//    for globally:
-npm install electron -g
-choco install electron
-choco upgrade electron
-//- clone repo from github https://github.com/JerryGoyal/Flash-Clipboard
-//- open with vscode
+## BUILD
+    - npm install
+    // rebuild all node_modules
+            npm install
+            npm rebuild
 
-// HOW TO BUILD //
-// - run: npm install
+    // outdated npm modules
+    npm outdated
+
+    // removes packages not depended on by your project according to your package.json:
+    npm prune
 
 
-// HOW TO RUN //
-electron ./main.js
+## RUN & DBUG
+    - electron ./main.js (might give error)
+    - or hit debug button in vscode
+    // https://stackoverflow.com/questions/48854265/why-do-i-see-an-electron-security-warning-after-updating-my-electron-project-t
+        - if ROBOTJS issues
+            - see https://stackoverflow.com/questions/11178372/is-it-possible-to-simulate-keyboard-mouse-event-in-nodejs/46897783#46897783
+            - or follow below instructions
+        - npm install --global windows-build-tools
+        - npm install robotjs --save-dev
+        // for me, it added 0.4.7 version
+        - npm rebuild --runtime=electron --target=2.0.8 --disturl=https://atom.io/download/atom-shell --abi=57
+        // here 2.0.8 = my electron version electron --version
+        // abi 57 =  for my corresponding node version 8.11.2 node --version
+        // if couldn't run then try build steps one more time and then run
 
-// - if it gave robotjs issues: follow below instructions or see https://stackoverflow.com/questions/11178372/is-it-possible-to-simulate-keyboard-mouse-event-in-nodejs/46897783#46897783
-    npm install --global windows-build-tools
-    npm install robotjs --save-dev
-    //(for me, it added 0.4.7 version)
-    npm rebuild --runtime=electron --target=1.7.10 --disturl=https://atom.io/download/atom-shell --abi=57
-    //(yarn install --force )
-    // (here 1.7.10 is my electron version and abi 57 is for my corresponding node version 8.9.4)
-    // (if couldn't run then try build steps one more time and then run)
-
-// HOW TO PUBLISH //
-//By default, electron-updater will try to detect the GitHub settings (such as the repo name and owner) from reading the .git/config
+## PUBLISH
+    - By default, electron-updater will try to detect the GitHub settings (such as the repo name and owner) from reading the .git/config
 Optional:
  {
      ...
@@ -49,13 +63,13 @@ Optional:
      }
  }
 
- 1) get access token from https://github.com/settings/tokens/new and check "repo" section
+1) get access token from https://github.com/settings/tokens/new and check "repo" section
 
- 2) Windows: set it in terminal: [Environment]::SetEnvironmentVariable("GH_TOKEN","fs949jweksc6d3352fdb2ae4cdecf84jjfvw9vf","User")
+2) Windows: set it in terminal: [Environment]::SetEnvironmentVariable("GH_TOKEN","fs949jweksc6d3352fdb2ae4cdecf84jjfvw9vf","User")
 
- 3) update the version in package.json and commit all changes
+3) update the version in package.json and commit all changes
 
- 4) run: node_modules/.bin/build -p always
+4) run: node_modules/.bin/build -p always
     -- it'll create a new tag with current version and push the exe to the new DRAFT.
 
 5) got to github repo-> releases and edit and "publish" this draft.
@@ -63,57 +77,31 @@ Optional:
 6) update should be avilable in user app. again repeat step 3, 4 and 5 for new release.
 
 
-// How to package app using electron builder
-- install yarn from https://yarnpkg.com/en/docs/install
-- run in vscode: yarn add electron-builder --dev
-- configure package.json follow https://www.electron.build
-- run: npx electron-builder
-//artifactName String - The artifact file name template. Defaults to ${productName} Setup ${version}.${ext}
-//can use glob ["**/*", "build/icon.*"]
+## PACKAGE app using electron builder
+    - install yarn from https://yarnpkg.com/en/docs/install
+    - run in vscode: yarn add electron-builder --dev
+    - configure package.json follow https://www.electron.build
+    - run: npx electron-builder
+    //artifactName String - The artifact file name template. Defaults to ${productName} Setup ${version}.${ext}
+    //can use glob ["**/*", "build/icon.*"]
  
-// how to sign app while packagaing
-- generate selfsign certificate for windows
-- add "certificateFile" : "certificate.pfx" to package.json
- - add CSC_KEY_PASSWORD to env variable with password as value
-- run npm electron-builder
-"nsis": {
-    "runAfterFinish": true,
-    "installerIcon": "icon.ico",
-    "uninstallerIcon": "icon.ico",
-    "createDesktopShortcut": true,
-    "deleteAppDataOnUninstall": true
-  }
+## SIGN app while packagaing
+    - generate selfsign certificate for windows
+    - add "certificateFile" : "certificate.pfx" to package.json
+    - add CSC_KEY_PASSWORD to env variable with password as value
+    - run npm electron-builder
+    "nsis": {
+        "runAfterFinish": true,
+        "installerIcon": "icon.ico",
+        "uninstallerIcon": "icon.ico",
+        "createDesktopShortcut": true,
+        "deleteAppDataOnUninstall": true
+    }
 
+## unistall node module
+    - npm -g uninstall my_module --save
+    - npm rm my_module
+    - yarn remove my_module
 
-  // HANDY COMMANDS //
-
-// install choco for windows (run in admin cmd not powershell)
-@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
-
-// update choco
-choco upgrade chocolatey
-
-// rebuild all node_modules
-npm install
-npm rebuild
-
-// outdated npm modules
-npm outdated
-
-// update all packages to latest version in package.json
- npm update --save/--save-dev
- yarn upgrade-interactive --latest
-
-// removes packages not depended on by your project according to your package.json:
-npm prune
-
-// unistall node module
-npm -g uninstall my_module --save
-npm rm my_module
-yarn remove my_module
-
-// Clean npm cache (never required though):
-npm cache clean -f
-
-// lists all installed packages:
-npm list
+## lists all installed packages:
+    - npm list

@@ -42,7 +42,7 @@ function initMain() {
 function initSettings() {
     storage.get('settings', function (error, obj) {
         if (error) throw error;
-        if (!isEmpty(obj)) {
+        if (isEmpty(obj)) {
             //first run
             //displayBalloon();
             storage.set('settings', config.SETTINGS, function (error) {
@@ -77,7 +77,7 @@ function parseSettings(obj) {
     try {
         obj.items = parseInt(obj.items);
         obj.width = parseInt(obj.width);
-        if (!(obj.shortcut.substr(-2,1)==='+')) { return false; }
+        if (!(obj.shortcut.substr(-2, 1) === '+')) { return false; }
         if (isNaN(obj.items) || obj.items > 100) { return false; }
         if (isNaN(obj.width) || obj.width > 1000) { return false; }
     } catch (e) {
@@ -110,17 +110,17 @@ function showClipboardWindow() {
 ipcMain.on('set-size-pos-command', (event, height) => {
     //wait for 100ms then show the window.. workaround for flicker effect
     setTimeout(function () {
-    setSizePos(height);
+        setSizePos(height);
     }, 100);
 })
-function setSizePos(height){
+function setSizePos(height) {
     clipboardWindow.show();
     let screen = electron.screen.getPrimaryDisplay().size;
     clipboardWindow.setPosition(screen.height, screen.width, false);
     clipboardWindow.setSize(config.SETTINGS.width, Math.ceil(height), false);
     let mouse = electron.screen.getCursorScreenPoint();
     let clipwin_y, clipwin_x;
-   
+
 
     let clipwin_ht = clipboardWindow.getSize()[1];
 
@@ -135,9 +135,9 @@ function setSizePos(height){
         clipwin_y = mouse.y + mouseMargin - diff_ht;
         clipwin_y = Math.max(screenMargin, clipwin_y);
     }
-    
+
     clipboardWindow.setPosition(clipwin_x, clipwin_y, false);
-    
+
 }
 function hideClipboardWindow() {
     let screen = electron.screen.getPrimaryDisplay().size
@@ -150,7 +150,7 @@ function hideSettingsWindow() {
 function initClipboardWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
     let maxHeight = screenSize.height - 80;
-    clipboardWindow=null;
+    clipboardWindow = null;
     clipboardWindow = new BrowserWindow({
         webPreferences: {
             backgroundThrottling: false
@@ -180,14 +180,14 @@ function initClipboardWindow() {
     });
 }
 
-function initAboutWindow(){
+function initAboutWindow() {
     aboutWindow = new BrowserWindow({
         width: 400,
         title: 'Flash Clipboard - About', center: true,
         useContentSize: true,
         backgroundThrottling: false, show: false, thickFrame: true,
-        hasShadow: true, 
-        resizable: false, maximizable: false, minimizable: false,alwaysOnTop: true,skipTaskbar: true,
+        hasShadow: true,
+        resizable: false, maximizable: false, minimizable: false, alwaysOnTop: true, skipTaskbar: true,
         frame: true
     })
     aboutWindow.setMenu(null)
@@ -206,14 +206,14 @@ function showAboutWindow() {
         initAboutWindow();
         aboutWindow.webContents.on('did-finish-load', () => {
             aboutWindow.webContents.send('appversion', app.getVersion());
-              })
-    }else{
+        })
+    } else {
         aboutWindow.webContents.send('appversion', app.getVersion());
     }
 }
 
 ipcMain.on('show-about', (event, height) => {
-    aboutWindow.setSize(400, Math.ceil(height)+40, false);
+    aboutWindow.setSize(400, Math.ceil(height) + 40, false);
     aboutWindow.show();
 })
 
@@ -377,13 +377,13 @@ app.on('window-all-closed', () => {
 
 //############################# SETTINGS #############################//
 
-function autoStart(val){
+function autoStart(val) {
     app.setLoginItemSettings({
         openAtLogin: val,
         path: process.execPaths
     })
 }
-function registerShortcut(shortcut){
+function registerShortcut(shortcut) {
     globalShortcut.unregisterAll();
     globalShortcut.register(shortcut, () => {
         showClipboardWindow();
@@ -415,28 +415,28 @@ function trimItemsList(maxItems) {
 }
 
 function initSettingsWindow() {
-    
-        settingsWindow = new BrowserWindow({
-            width: 500,height:300,
-            title: 'Flash Clipboard - Settings', center: true,
-            useContentSize: true,
-            webPreferences: {
-                backgroundThrottling: false
-            }, show: false,
-            hasShadow: true, alwaysOnTop: true,
-            resizable: false, maximizable: false, minimizable: false,thickFrame: true,
-            frame: true, skipTaskbar: true
-        })
-        settingsWindow.setMenu(null)
-        settingsWindow.loadURL(url.format({
-            pathname: config.SETTINGS_PAGE,
-            protocol: 'file:',
-            slashes: true
-        }))
-        settingsWindow.on('closed', () => {
-            settingsWindow = null
-        })
-    }
+
+    settingsWindow = new BrowserWindow({
+        width: 500, height: 300,
+        title: 'Flash Clipboard - Settings', center: true,
+        useContentSize: true,
+        webPreferences: {
+            backgroundThrottling: false
+        }, show: false,
+        hasShadow: true, alwaysOnTop: true,
+        resizable: false, maximizable: false, minimizable: false, thickFrame: true,
+        frame: true, skipTaskbar: true
+    })
+    settingsWindow.setMenu(null)
+    settingsWindow.loadURL(url.format({
+        pathname: config.SETTINGS_PAGE,
+        protocol: 'file:',
+        slashes: true
+    }))
+    settingsWindow.on('closed', () => {
+        settingsWindow = null
+    })
+}
 
 function showSettingsWindow() {
     storage.get(config.SETTINGSKEY, function (error, obj) {
@@ -460,7 +460,7 @@ function showSettingsWindow() {
 }
 
 ipcMain.on('ready-settings-win', (event, obj) => {
-    settingsWindow.setSize(500,Math.ceil(obj)+30,false);
+    settingsWindow.setSize(500, Math.ceil(obj) + 30, false);
     settingsWindow.show();
 })
 
@@ -483,6 +483,7 @@ ipcMain.on('settings-save', (event, obj) => {
     }
 })
 //############################# APP UPDATE #############################//
+//TODO: comment below line before release
 // if (isDev) {
 //     autoUpdater.updateConfigPath = path.join(__dirname, 'app-update.yml');
 // }
