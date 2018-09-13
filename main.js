@@ -150,10 +150,10 @@ function hideSettingsWindow() {
 function initClipboardWindow() {
     let screenSize = electron.screen.getPrimaryDisplay().size;
     let maxHeight = screenSize.height - 80;
-    clipboardWindow = null;
     clipboardWindow = new BrowserWindow({
         webPreferences: {
-            backgroundThrottling: false
+            nodeIntegration: false,
+            preload: path.join(__dirname, '/js/renderer.js')
         },
         useContentSize: true,
         show: false, hasShadow: true, skipTaskbar: true, backgroundColor: "#f5f5f5",
@@ -182,10 +182,14 @@ function initClipboardWindow() {
 
 function initAboutWindow() {
     aboutWindow = new BrowserWindow({
+        webPreferences: {
+            nodeIntegration: false,
+            preload: path.join(__dirname, '/js/renderer.js')
+        },
         width: 400,
         title: 'Flash Clipboard - About', center: true,
         useContentSize: true,
-        backgroundThrottling: false, show: false, thickFrame: true,
+        show: false, thickFrame: true,
         hasShadow: true,
         resizable: false, maximizable: false, minimizable: false, alwaysOnTop: true, skipTaskbar: true,
         frame: true
@@ -417,12 +421,14 @@ function trimItemsList(maxItems) {
 function initSettingsWindow() {
 
     settingsWindow = new BrowserWindow({
+        webPreferences: {
+            nodeIntegration: false,
+            preload: path.join(__dirname, '/js/renderer.js')
+        },
         width: 500, height: 300,
         title: 'Flash Clipboard - Settings', center: true,
         useContentSize: true,
-        webPreferences: {
-            backgroundThrottling: false
-        }, show: false,
+        show: false,
         hasShadow: true, alwaysOnTop: true,
         resizable: false, maximizable: false, minimizable: false, thickFrame: true,
         frame: true, skipTaskbar: true

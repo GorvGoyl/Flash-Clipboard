@@ -1,20 +1,22 @@
 'use strict'
-let MAX_ITEMS=100, MAX_WIDTH=1000;
-let alt, ctrl, shift, cmd,cmdctrl;
+let MAX_ITEMS = 100, MAX_WIDTH = 1000;
+let alt, ctrl, shift, cmd, cmdctrl;
 let altck, ctrlck, shiftck, cmdck, autorunck;
 let keybx, itemsbx, widthbx;
 
 /*
 ELECTRON
 */
-const { ipcRenderer } = require('electron')
+const { ipcRenderer } = require('electron');
+const path = require('path');
 let ipc = require('electron').ipcRenderer;
-let shell = require('electron').shell
+let shell = require('electron').shell;
+
 document.addEventListener('click', function (event) {
-  if (event.target.tagName === 'A' && event.target.href.startsWith('http')) {
-    event.preventDefault()
-    shell.openExternal(event.target.href)
-  }
+    if (event.target.tagName === 'A' && event.target.href.startsWith('http')) {
+        event.preventDefault()
+        shell.openExternal(event.target.href)
+    }
 })
 
 ipc.on('sendclipboard', function (event, clipArr) {
@@ -31,8 +33,8 @@ ipc.on('sendclipboard', function (event, clipArr) {
     // default focus on 2nd element
     if (clipArr.length > 1)
         $('li:first-child').next().focus().addClass("active");
-    else if(clipArr.length==1) $('li:first-child').focus().addClass("active");
-    else{
+    else if (clipArr.length == 1) $('li:first-child').focus().addClass("active");
+    else {
         let spn = $('<span />').html("copy some text and that'll appear here")
         ul.append("copy some text and that'll appear here :-)");
         $(ul).addClass('nocontent');
@@ -43,7 +45,7 @@ ipc.on('sendclipboard', function (event, clipArr) {
 });
 ipc.on('appversion', function (event, vers) {
     let el = document.getElementById("version");
-    el.innerHTML=vers;
+    el.innerHTML = vers;
     let pageHeight = $('body').outerHeight(true);
     sendToMain('show-about', pageHeight);
 });
@@ -115,11 +117,11 @@ function setValues(obj, isMAC) {
     itemsbx.val(obj.items);
     widthbx.val(obj.width);
     let pageHeight = ($('body').outerHeight(true));
-    sendToMain('ready-settings-win',pageHeight);
+    sendToMain('ready-settings-win', pageHeight);
 }
 
 function settings_save() {
-    let obj = {}, srt='';
+    let obj = {}, srt = '';
     if (altck.is(':checked')) srt += alt + '+';
     if (shiftck.is(':checked')) srt += shift + '+';
     if (cmdck.is(':checked') || ctrlck.is(':checked')) srt += cmdctrl + '+';
@@ -131,61 +133,70 @@ function settings_save() {
     sendToMain('settings-save', obj);
 }
 
-$(document).ready(function () {
-    /*CLIPBOARD_PAGE*/
-    let $this;
-    $('div.clipboard-container').on('focus', 'li', function () {
-        $this = $(this);
-        $this.addClass('active').siblings().removeClass();
-        $this.closest('div.clipboard-container').scrollTop($this.index() * $this.outerHeight());
-    }).on('keydown', 'li', function (e) {
-        $this = $(this);
-        if (e.keyCode == 40) {
-            $this.next().focus();
-            return false;
-        } else if (e.keyCode == 38) {
-            $this.prev().focus();
-            return false;
-        } else if (e.keyCode == 13) {
-            pasteValue($this.text());
-            return false;
-        }
-    }).on('mouseenter', 'li', function (event) {
-        $(this).focus().addClass('active').siblings().removeClass();;
-    }).on('mouseleave', 'li', function (event) {
-        $(this).removeClass('active');
-    }).on('click', 'li', function (event) {
-        pasteValue($(this).text());
-    });
-    /*-CLIPBOARD_PAGE END*/
+//TODO: change below to doc.ready
+window.addEventListener('load', () => {
+    try {
+        //inject jquery to page
+        window.$ = window.jQuery = require(path.join(__dirname, '/jquery-3.2.1.slim.min.js'));
 
-    /*SETTINGS_PAGE*/
-    // allow only numbers in number field
-    $(':input[type="number"]').on("keydown keyup", function (evt) {
-        if (!allowedKey(evt.which) && evt.which < 48 || evt.which > 57) {
-            evt.preventDefault();
-        }
+        /*CLIPBOARD_PAGE*/
+        let $this;
+        $('div.clipboard-container').on('focus', 'li', function () {
+            $this = $(this);
+            $this.addClass('active').siblings().removeClass();
+            $this.closest('div.clipboard-container').scrollTop($this.index() * $this.outerHeight());
+        }).on('keydown', 'li', function (e) {
+            $this = $(this);
+            if (e.keyCode == 40) {
+                $this.next().focus();
+                return false;
+            } else if (e.keyCode == 38) {
+                $this.prev().focus();
+                return false;
+            } else if (e.keyCode == 13) {
+                pasteValue($this.text());
+                return false;
+            }
+        }).on('mouseenter', 'li', function (event) {
+            $(this).focus().addClass('active').siblings().removeClass();;
+        }).on('mouseleave', 'li', function (event) {
+            $(this).removeClass('active');
+        }).on('click', 'li', function (event) {
+            pasteValue($(this).text());
+        });
+        /*-CLIPBOARD_PAGE END*/
 
-    });
+        /*SETTINGS_PAGE*/
+        // allow only numbers in number field
+        $(':input[type="number"]').on("keydown keyup", function (evt) {
+            if (!allowedKey(evt.which) && evt.which < 48 || evt.which > 57) {
+                evt.preventDefault();
+            }
 
-    $('#maxitems').on("keydown keyup", function (evt) {
-        if ($(this).val() > MAX_ITEMS && !allowedKey(evt.which)) {
-            evt.preventDefault();
-            $(this).val(MAX_ITEMS);
-        }
-    });
-    $('#maxwidth').on("keydown keyup", function (evt) {
-        if ($(this).val() > MAX_WIDTH && !allowedKey(evt.which)) {
-            evt.preventDefault();
-            $(this).val(MAX_WIDTH);
-        }
-    });
-    $('#shortcutkey').on("keypress", function (evt) {
-        if (!allowedKey(evt.which)){
-            evt.preventDefault();
-            keybx.val(String.fromCharCode(evt.which).toUpperCase());
-        }
-        
-    });
-    /*-SETTINGS_PAGE END*/
+        });
+
+        $('#maxitems').on("keydown keyup", function (evt) {
+            if ($(this).val() > MAX_ITEMS && !allowedKey(evt.which)) {
+                evt.preventDefault();
+                $(this).val(MAX_ITEMS);
+            }
+        });
+        $('#maxwidth').on("keydown keyup", function (evt) {
+            if ($(this).val() > MAX_WIDTH && !allowedKey(evt.which)) {
+                evt.preventDefault();
+                $(this).val(MAX_WIDTH);
+            }
+        });
+        $('#shortcutkey').on("keypress", function (evt) {
+            if (!allowedKey(evt.which)) {
+                evt.preventDefault();
+                keybx.val(String.fromCharCode(evt.which).toUpperCase());
+            }
+
+        });
+        /*-SETTINGS_PAGE END*/
+    } catch (e) {
+        console.log("Error in renderer: " + JSON.stringify(e));
+    }
+
 });
