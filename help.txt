@@ -1,19 +1,24 @@
-## INSTALL
+## INSTALL (use yarn wherever necessary)
     // install choco for windows (run in admin cmd not powershell)
         @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
     - choco install nodejs-lts ( + npm) (LTS) //restart vscode
+    choco install yarn
     // if robotjs issue then temp remove from package.json: "robotjs": "^X.x.x"
     - npm install electron --save-dev (recommended)
     - npm install electron -g (globally)
 
-## UPGRADE
+## UPGRADE (use yarn wherever necessary)
+    // update all packages to latest version in package.json
+    - yarn upgrade-interactive --latest
+       
+    // caution: elow npm update doesn't work sometimes
+        - npm update --save
+        - npm update --save-dev
+
     - choco upgrade nodejs (+ npm)
     - choco upgrade chocolatey
     - choco upgrade electron
     - yarn upgrade-interactive --latest
-    // update all packages to latest version in package.json
-        - npm update --save
-        - npm update --save-dev
 
 ## CHECK VERSION
     - node --version  //8.9.4
@@ -23,14 +28,14 @@
 ## BUILD
     - npm install
     // rebuild all node_modules
-            npm install
-            npm rebuild
+        npm install
+        npm rebuild
 
     // outdated npm modules
     npm outdated
 
     // removes packages not depended on by your project according to your package.json:
-    npm prune
+    npm prune --production
 
 
 ## RUN & DBUG
@@ -47,6 +52,31 @@
         // here 2.0.8 = my electron version electron --version
         // abi 57 =  for my corresponding node version 8.11.2 node --version
         // if couldn't run then try build steps one more time and then run
+
+
+## PACKAGE app using electron builder
+    - configure package.json follow https://www.electron.build 
+    - yarn add electron-builder --dev
+    - yarn dist
+    //see detailed logs by setting:
+        //permanent.. need to reload cmd
+        - setx DEBUG "electron-builder" // remove it by: REG delete HKCU\Environment /F /V DEBUG
+        //for one session only
+        - set DEBUG=electron-builder // remove it by: set DEBUG=
+
+## SIGN app while packagaing
+    - generate selfsign certificate for windows https://stackoverflow.com/questions/84847/how-do-i-create-a-self-signed-certificate-for-code-signing-on-windows/47144138#47144138
+    - add "certificateFile" : "selfsigncert.pfx" to package.json
+    - add CSC_KEY_PASSWORD to env variable with password as value
+        - setx CSC_KEY_PASSWORD "my_password"
+    "nsis": {
+        "runAfterFinish": true,
+        "installerIcon": "icon.ico",
+        "uninstallerIcon": "icon.ico",
+        "createDesktopShortcut": true,
+        "deleteAppDataOnUninstall": true
+    }
+
 
 ## PUBLISH
     - By default, electron-updater will try to detect the GitHub settings (such as the repo name and owner) from reading the .git/config
@@ -77,26 +107,6 @@ Optional:
 6) update should be avilable in user app. again repeat step 3, 4 and 5 for new release.
 
 
-## PACKAGE app using electron builder
-    - install yarn from https://yarnpkg.com/en/docs/install
-    - run in vscode: yarn add electron-builder --dev
-    - configure package.json follow https://www.electron.build
-    - run: npx electron-builder
-    //artifactName String - The artifact file name template. Defaults to ${productName} Setup ${version}.${ext}
-    //can use glob ["**/*", "build/icon.*"]
- 
-## SIGN app while packagaing
-    - generate selfsign certificate for windows
-    - add "certificateFile" : "certificate.pfx" to package.json
-    - add CSC_KEY_PASSWORD to env variable with password as value
-    - run npm electron-builder
-    "nsis": {
-        "runAfterFinish": true,
-        "installerIcon": "icon.ico",
-        "uninstallerIcon": "icon.ico",
-        "createDesktopShortcut": true,
-        "deleteAppDataOnUninstall": true
-    }
 
 ## unistall node module
     - npm -g uninstall my_module --save
@@ -105,3 +115,11 @@ Optional:
 
 ## lists all installed packages:
     - npm list
+
+##BLOG TO-DO:
+- missing in package.json
+ "include": "./build/installer.nsh"
+- and installer.nsh file 
+
+##TO-DO:
+- mac icons https://www.electron.build/icons
