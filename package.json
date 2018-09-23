@@ -1,10 +1,10 @@
 {
   "name": "flash-clipboard",
   "productName": "Flash Clipboard",
-  "author": "JerryGoyal",
+  "author": "Jerrygoyal",
   "license": "ISC",
   "version": "0.1.0",
-  "description": "Software to maintain list of recently copied text which can be pasted later using a shortcut",
+  "description": "Maintains a list of recently copied text which can be pasted later quickly using a key shortcut",
   "homepage": "https://github.com/JerryGoyal/Flash-Clipboard",
   "main": "main.js",
   "keywords": [
@@ -24,22 +24,26 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps",
-    "publish": "node_modules/.bin/build -p always",
-    "package": "npx electron-builder"
+    "publish": "node_modules/.bin/build -p always"
   },
-  "files": [],
   "repository": {
     "type": "git",
     "url": "https://github.com/JerryGoyal/Flash-Clipboard.git"
   },
   "build": {
     "productName": "Flash Clipboard",
-    "copyright": "Copyright © 2017 Gourav Goyal",
-    "appId": "com.jerrymadeapps.flashclipboard",
+    "copyright": "Copyright © 2018 Jerrygoyal",
+    "appId": "com.electron.flashclipboard",
     "win": {
       "icon": "./img/flashclipboard.ico",
-      "publisherName": "jerrymadeapps",
-      "certificateFile": "selfsigncert.pfx"
+      "publisherName": "Jerrygoyal",
+      "certificateFile": "selfsigncert.pfx",
+      "publish": [
+        "github"
+      ]
+    },
+    "mac": {
+      "category": "public.app-category.productivity"
     },
     "nsis": {
       "runAfterFinish": true,
@@ -51,11 +55,11 @@
   "dependencies": {
     "electron-json-storage": "^4.1.2",
     "electron-log": "^2.2.17",
-    "electron-updater": "^2.23.3"
+    "electron-updater": "^3.1.2",
+    "robotjs": "^0.5.1"
   },
   "devDependencies": {
-    "electron": "^2.0.8",
-    "electron-builder": "^19.56.2",
-    "robotjs": "^0.4.7"
+    "electron": "^2.0.10",
+    "electron-builder": "^20.28.4"
   }
 }
