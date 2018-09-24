@@ -122,6 +122,7 @@ see sample: https://github.com/iffy/electron-updater-example/blob/master/main.js
 - missing in package.json
  "include": "./build/installer.nsh"
 - and installer.nsh file 
+<<<<<<< HEAD
 - add auto-update tut 
 
 ##TO-DO:
