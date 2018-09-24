@@ -3,7 +3,7 @@
   "productName": "Flash Clipboard",
   "author": "Jerrygoyal",
   "license": "ISC",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Maintains a list of recently copied text which can be pasted later quickly using a key shortcut",
   "homepage": "https://github.com/JerryGoyal/Flash-Clipboard",
   "main": "main.js",
@@ -24,7 +24,7 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps",
-    "publish": "node_modules/.bin/build -p always"
+    "publish-draft": "node_modules/.bin/build -p always"
   },
   "repository": {
     "type": "git",

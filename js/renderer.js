@@ -194,6 +194,10 @@ window.addEventListener('load', () => {
             }
 
         });
+        $('#savebtn').on("click", function (evt) {
+            settings_save();
+
+        });
         /*-SETTINGS_PAGE END*/
     } catch (e) {
         console.log("Error in renderer: " + JSON.stringify(e));
