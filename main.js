@@ -29,6 +29,7 @@ function initMain() {
         displayBalloon();
         app.quit();
     }
+
     initSettings();
     // globalShortcut.register('CmdOrCtrl+Shift+P', () => {
     //     console.log(storage.getDataPath());
@@ -496,6 +497,7 @@ ipcMain.on('settings-save', (event, obj) => {
 autoUpdater.allowPrerelease = true;
 
 autoUpdater.on('update-downloaded', (info) => {
+    log.info("update downloaded: " + JSON.stringify(info))
     // setImmediate(() => {
     //     app.removeAllListeners("window-all-closed")
     //     if (focusedWindow != null) {
@@ -503,7 +505,13 @@ autoUpdater.on('update-downloaded', (info) => {
     //     }
     //     autoUpdater.quitAndInstall(false)
     //   })
-    setImmediate(() => autoUpdater.quitAndInstall(true, true))
+    setImmediate((e) => {
+        log.info("quitAndInstall")
+        autoUpdater.quitAndInstall(false, true)
+
+    }
+
+    )
     //autoUpdater.quitAndInstall(true,true); 
 })
 
