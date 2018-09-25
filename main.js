@@ -116,7 +116,8 @@ ipcMain.on('set-size-pos-command', (event, height) => {
 })
 function setSizePos(height) {
     clipboardWindow.show();
-    let screen = electron.screen.getPrimaryDisplay().size;
+    let point = electron.screen.getCursorScreenPoint();
+    let screen = electron.screen.getDisplayNearestPoint(point).size;
     clipboardWindow.setPosition(screen.height, screen.width, false);
     clipboardWindow.setSize(config.SETTINGS.width, Math.ceil(height), false);
     let mouse = electron.screen.getCursorScreenPoint();
